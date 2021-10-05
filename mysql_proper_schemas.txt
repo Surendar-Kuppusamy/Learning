@@ -1,0 +1,307 @@
+CREATE TABLE site_history
+(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    hash_id VARCHAR(100) NOT NULL,
+    site_total_view_count INT NOT NULL DEFAULT 0,
+    ip VARCHAR(100) NOT NULL,
+    browser VARCHAR(100) NOT NULL,
+    created_on DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00'
+) ENGINE=INNODB;
+
+
+CREATE TABLE users
+(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    hash_id VARCHAR(100) NOT NULL,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(50) NOT NULL,
+    dob DATE NOT NULL,
+    mobile_number VARCHAR(50) NOT NULL,
+    telephone_number VARCHAR(50),
+    address TEXT NOT NULL,
+	profile_image VARCHAR(200),
+    user_type ENUM(1, 2, 3) NOT NULL COMMENT '(1 - Admin, 2 - house owner, 3 - tenant)',
+    user_status ENUM(1, 2) NOT NULL COMMENT '(1 - active, 0 - disabled)',
+    created_on DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+    modified_on DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00'
+) ENGINE=INNODB;
+
+
+CREATE TABLE oauth_users
+(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    hash_id VARCHAR(100) NOT NULL,
+    first_name VARCHAR(100),
+    last_name VARCHAR(100),
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(50),
+    dob DATE,
+    mobile_number VARCHAR(50),
+    telephone_number VARCHAR(50),
+    address TEXT,
+	profile_image VARCHAR(200),
+    user_type ENUM(1, 2, 3) COMMENT '(1 - Admin, 2 - House owner, 3 - Tenant)',
+    user_status ENUM(1, 2) COMMENT '(1 - active, 0 - disabled)',
+    created_on DATETIME DEFAULT '0000-00-00 00:00:00',
+    modified_on DATETIME DEFAULT '0000-00-00 00:00:00'
+) ENGINE=INNODB;
+
+
+CREATE TABLE logged_details
+(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    hash_id VARCHAR(100) NOT NULL,
+    user_id INT NOT NULL,
+    ip VARCHAR(100) NOT NULL,
+    browser VARCHAR(300) NOT NULL,
+    logged_via ENUM("Site", "Oauth") NOT NULL COMMENT '(1 - site, 2 - Oauth)',
+    logged_on DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',    
+) ENGINE=INNODB;
+
+
+CREATE TABLE assets
+(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    hash_id VARCHAR(100) NOT NULL,
+    user_id INT NOT NULL,
+    type_of_asset INT NOT NULL,
+    asset_for ENUM("Rent", "Lease", "Sale") NOT NULL COMMENT '(1 - normal rent, 2 - for lease, 3 - Sale)',
+    asset_name VARCHAR(100) NOT NULL,
+    door_number INT NOT NULL,
+    address_hint VARCHAR(500),
+    street VARCHAR(500),
+    nagar VARCHAR(500),
+    city INT NOT NULL,
+    state INT NOT NULL,
+    pincode INT NOT NULL,
+    landmark TEXT,
+    age_of_asset INT NOT NULL,
+    age_of_asset_type VARCHAR(100) NOT NULL,
+    asset_main_image VARCHAR(500),
+    asset_size_in_length INT,
+    asset_size_in_length_type VARCHAR(100),
+    asset_size_in_width INT,
+    asset_size_in_width_type VARCHAR(100),
+    advance_amount_for_asset INT,
+    monthly_rent_for_asset INT,
+    lease_amount_for_asset INT,
+    lease_period_for_asset INT,
+    lease_period_for_asset_type VARCHAR(100),
+    asset_price INT,
+    asset_notes_by_owner TEXT,
+    asset_amenities INT NOT NULL,
+    who_can_contact INT NOT NULL,
+    asset_available_on_from DATE NOT NULL,
+    notice_period_for_vocate_asset INT,
+    notice_period_for_vocate_asset_type VARCHAR(100),
+    asset_status_now INT NOT NULL,
+    show_my_asset_for_tenants ENUM("Show", "Hide") NOT NULL COMMENT '(1- Show, 2-Hide)',
+    number_of_rooms    INT,
+    bhk INT,
+    created_by INT,
+    modified_by INT,
+    created_on DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+    modified_on DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+    CONSTRAINT fk_asset_user_id FOREIGN KEY (user_id) REFERENCES users(id),
+    CONSTRAINT fk_type_of_asset FOREIGN KEY (type_of_asset) REFERENCES type_of_asset(id),
+    CONSTRAINT fk_who_can_contact FOREIGN KEY (who_can_contact) REFERENCES asset_who_can_contacts(id),
+    CONSTRAINT fk_amenities FOREIGN KEY (asset_amenities) REFERENCES asset_amenities(id),
+    CONSTRAINT fk_who_can_contact FOREIGN KEY (asset_status_now) REFERENCES asset_status_names(id),
+    CONSTRAINT fk_city FOREIGN KEY (city) REFERENCES cities(id),
+    CONSTRAINT fk_state FOREIGN KEY (states) REFERENCES asset_status_names(id)
+) ENGINE=INNODB;
+
+
+CREATE TABLE rooms
+(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    hash_id VARCHAR(100) NOT NULL,
+    asset_id INT NOT NULL,
+    room_type INT NOT NULL,
+    room_size_in_length VARCHAR(200) NOT NULL,
+    room_size_in_length_type VARCHAR(200) NOT NULL,
+    room_size_in_width VARCHAR(200) NOT NULL,
+    room_size_in_width_type VARCHAR(200) NOT NULL,
+    room_image VARCHAR(500),
+    created_by INT,
+    modified_by INT,
+    created_on DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+    modified_on DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00'
+    CONSTRAINT fk_asset_id FOREIGN KEY (asset_id) REFERENCES assets(id),
+    CONSTRAINT fk_room_type_id FOREIGN KEY (room_type) REFERENCES room_types(id)
+) ENGINE=INNODB;
+
+
+CREATE TABLE asset_images
+(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    hash_id VARCHAR(100) NOT NULL,
+    asset_id INT NOT NULL,
+    image VARCHAR(500) NOT NULL,
+    created_by INT,
+    created_on DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+    CONSTRAINT fk_asset_id FOREIGN KEY (asset_id) REFERENCES assets(id)
+) ENGINE=INNODB;
+
+
+
+CREATE TABLE room_images
+(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    hash_id VARCHAR(100) NOT NULL,
+    room_id INT NOT NULL,
+    image VARCHAR(500) NOT NULL,
+    created_by INT,
+    created_on DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+    CONSTRAINT fk_room_id FOREIGN KEY (room_id) REFERENCES rooms(id)
+) ENGINE=INNODB;
+
+
+CREATE TABLE cities
+(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    hash_id VARCHAR(100) NOT NULL,
+    city_name VARCHAR(300) NOT NULL,
+    created_by INT,
+    modified_by INT,
+    created_on DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+    modified_on DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00'
+) ENGINE=INNODB;
+
+
+CREATE TABLE states
+(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    hash_id VARCHAR(100) NOT NULL,
+    state_name VARCHAR(300) NOT NULL,
+    created_by INT,
+    modified_by INT,
+    created_on DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+    modified_on DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00'
+) ENGINE=INNODB;
+
+
+CREATE TABLE asset_like_dislike_status
+(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    hash_id VARCHAR(100) NOT NULL,
+    asset_id INT NOT NULL,
+    like_or_dislike ENUM("Like", "Dislike") NOT NULL COMMENT '(1 - Like, 2- Dislike)',
+    user_id INT NOT NULL,
+    action_on DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+    CONSTRAINT fk_asset_id FOREIGN KEY (asset_id) REFERENCES assets(id),
+    CONSTRAINT fk_asset_user_id FOREIGN KEY (user_id) REFERENCES users(id)
+) ENGINE=INNODB;
+
+CREATE TABLE asset_comments
+(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    hash_id VARCHAR(100) NOT NULL,
+    asset_id INT NOT NULL,
+    comments TEXT NOT NULL,
+    user_id INT NOT NULL,
+    action_on DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+    CONSTRAINT fk_asset_id FOREIGN KEY (asset_id) REFERENCES assets(id),
+    CONSTRAINT fk_asset_user_id FOREIGN KEY (user_id) REFERENCES users(id)
+) ENGINE=INNODB;
+
+
+CREATE TABLE proposals
+(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    hash_id VARCHAR(100) NOT NULL,
+    from_user_id INT NOT NULL,
+    to_user_id INT NOT NULL,
+    asset_id INT NOT NULL,
+    is_proposal_cancelled ENUM("Not Cancelled", "Cancelled") NOT NULL COMMENT '(1 - Not Cancelled, 2 - Cancelled)',
+    proposal_on DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+    CONSTRAINT fk_from_id FOREIGN KEY (from_user_id) REFERENCES users(id),
+    CONSTRAINT fk_to_id FOREIGN KEY (to_user_id) REFERENCES users(id),
+    CONSTRAINT fk_asset_id FOREIGN KEY (asset_id) REFERENCES assets(id)
+) ENGINE=INNODB;
+
+CREATE TABLE room_types
+(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    hash_id VARCHAR(100) NOT NULL,
+    type VARCHAR(500) NOT NULL,
+    created_by INT,
+    modified_by INT,
+    created_on DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+    modified_on DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00'
+) ENGINE=INNODB;
+
+
+CREATE TABLE type_of_asset
+(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    hash_id VARCHAR(100) NOT NULL,
+    asset_type VARCHAR(500) NOT NULL,
+    created_by INT,
+    modified_by INT,
+    created_on DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+    modified_on DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00'
+) ENGINE=INNODB;
+
+
+CREATE TABLE who_can_contact_us
+(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    hash_id VARCHAR(100) NOT NULL,
+    tenant_type VARCHAR(500) NOT NULL,
+    created_by INT,
+    modified_by INT,
+    created_on DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+    modified_on DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00'
+) ENGINE=INNODB;
+
+
+CREATE TABLE asset_who_can_contacts
+(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    hash_id VARCHAR(100) NOT NULL,
+    asset_id INT NOT NULL,
+    who_can_contact_us_id INT NOT NULL,
+    added_by INT,
+    added_on DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+    CONSTRAINT fk_asset_id FOREIGN KEY (asset_id) REFERENCES assets(id),
+    CONSTRAINT fk_to_id FOREIGN KEY (who_can_contact_us_id) REFERENCES who_can_contact_us(id)
+) ENGINE=INNODB;
+
+
+CREATE TABLE asset_amenities
+(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    hash_id VARCHAR(100) NOT NULL,
+    asset_id INT NOT NULL,
+    amenities_id INT NOT NULL,
+    added_by INT,
+    added_on DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+    CONSTRAINT fk_asset_id FOREIGN KEY (asset_id) REFERENCES assets(id),
+    CONSTRAINT fk_to_id FOREIGN KEY (who_can_contact_us_id) REFERENCES who_can_contact_us(id)
+) ENGINE=INNODB;
+
+CREATE TABLE asset_status_names
+(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    hash_id VARCHAR(100) NOT NULL,
+    status_name VARCHAR(500) NOT NULL,
+    created_by INT,
+    modified_by INT,
+    created_on DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+    modified_on DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00'
+) ENGINE=INNODB;
+
+
+CREATE TABLE amenities
+(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    hash_id VARCHAR(100) NOT NULL,
+    amenities VARCHAR(500) NOT NULL,
+    created_by INT,
+    modified_by INT,
+    created_on DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+    modified_on DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00'
+) ENGINE=INNODB;

@@ -1,0 +1,61 @@
+Tables:
+
+site_history:
+id, hash_id, site_total_view_count, ip, browser, created_on
+
+users:
+id, hash_id, first_name, last_name, email, password, dob, mobile_number, telephone_number, address, profile_image, user_type(1 - Admin, 2 - house owner, 3 - tenant), user_status (1 - active, 0 - disabled), created_on, modified_on
+
+oauth_users:
+id, hash_id, first_name, last_name, email, password, dob, mobile_number, telephone_number, address, profile_image, user_type(1 - Admin, 2 - house owner, 3 - tenant), user_status (1 - active, 0 - disabled), created_on, modified_on
+
+logged_details:    
+id, hash_id, user_id, ip, browser, logged_via (1 - site, 2 - Oauth), logged_on
+
+asset:
+id, hash_id, user_id, type_of_asset(1 - House, 2 - Appartment, 3 - Store, 4 - Koddon, 5 - Land), asset_for(1 - normal rent, 2 - for lease), asset_name, door_number, address_hint, street, nagar, city, state, pincode, landmark, number_of_rooms, bhk, age_of_asset, age_of_asset_type, asset_main_image, asset_size_in_length, asset_size_in_length_type, asset_size_in_width, asset_size_in_width_type, advance_amount_for_asset, monthly_rent_for_asset, lease_amount_for_asset, lease_period_for_asset, lease_period_for_asset_type, asset_price, who_can_contact (1 - bachelor 2 - Family 3 - Anyone), asset_notes_by_owner, asset_amenities, asset_available_on_from, notice_period_for_vocate_asset, notice_period_for_vocate_asset_type, asset_status_now (1 - free(available), 2 - booked(unavailable), 3 - tenant_on_notice_period(tentant on his notice period)), show_my_asset_for_tenants(1 - Show, 2 - Hide),  created_by, created_on, modified_by, modified_on
+
+rooms:
+id, hash_id, asset_id, room_name, room_size_in_length, room_size_in_length_type, room_size_in_width, room_size_in_width_type, room_image, created_by, created_on, modified_by, modified_on
+
+asset_images:
+id, hash_id, asset_id, image, created_by, created_on
+
+room_images:
+id, hash_id, room_id, image, created_by, created_on
+
+cities:
+id, hash_id, city_name, created_by, created_on, modified_by, modified_on
+
+states:
+id, hash_id, state_name, created_by, created_on, modified_by, modified_on
+
+asset_like_dislike_status:
+id, hash_id, asset_id, like_or_dislike (1 - Like, 2- Dislike), user_id, action_on
+
+asset_comments:
+id, hash_id, asset_id, comments, user_id, action_on
+
+proposals:
+id, hash_id, from_user_id, to_user_id, asset_id, is_proposal_cancelled, proposal_on
+
+room_types:
+id, hash_id, type, created_by, modified_by, created_on, modified_on
+
+type_of_asset:
+id, hash_id, asset_type, created_by, modified_by, created_on, modified_on
+
+who_can_contact_us:
+id, hash_id, tenant_type, created_by, modified_by, created_on, modified_on
+
+asset_who_can_contacts:
+id, hash_id, asset_id, who_can_contact_us_id, added_by, added_on
+
+asset_amenities:
+id, hash_id, asset_id, amenities_id, added_by, added_on
+
+asset_status_names:
+id, hash_id, status_name, created_by, modified_by, created_on, modified_on
+
+amenities:    //வசதிகள்
+id, hash_id, amenities, created_by, modified_by, created_on, modified_on

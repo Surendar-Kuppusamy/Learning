@@ -1,0 +1,1210 @@
+Setup:
+-------
+
+* First install nodejs and npm. If you install nodejs then npm also installed.
+* Then install react using this command "npm install -g create-react-app".
+* Then create project using this command "npx create-react-app myfirstreact", in which "myfirstreact" it is project name. It will create project folders.
+* cd "myfirstreact" then run command "npm start", it will start your project.
+* <React.StrictMode><App /></React.StrictMode>StrictMode is a tool for highlighting potential problems in an application. Like Fragment, StrictMode does not render any visible UI. It activates additional checks and warnings for its descendants. Strict mode checks are run in development mode only; they do not impact the production build.
+
+* In index.js file, "import React from 'react';" and "import ReactDOM from 'react-dom';" import this two file, we are using "JSX" in react so we need to import 'react' in all files and 'ReactDOM' is needed once in index file, through which we can render HTML. "ReactDOM.render(What Element or component to render, Where to render);" => Example (ReactDOM.render(<div><App /></div>,document.getElementById('root'));).
+* Note one thing we can't render two element next to next for example, "(ReactDOM.render(<h1></h1><div></div>,document.getElementById('root'));)".
+* We can render element from component by two ways, i) By Function, ii) By Class.
+* In "function" we can't use state, but we can use props, but in "Class" we can use both state and props.
+* Props are on the component tag. And state is on constructor of class based component
+
+
+Reactjs Notes:
+--------------
+React is a JavaScript library for building user interfaces. React is a declarative, efficient, and flexible JavaScript library for building user interfaces. It lets you compose complex UIs from small and isolated pieces of code called ?components?.
+
+Create React App:
+-----------------
+
+First need to install latest version nodejs on the server. In which npm package manager is used. Then run the below commands
+
+*) npx create-react-app my-app
+*) cd my-app
+*) npm start
+
+Hello World:
+------------
+
+One of the way to show data => {`${url}/${product.id}`}.
+
+Example:
+-------
+ReactDOM.render(
+Hello, world!
+,
+document.getElementById('root')
+);
+
+
+Render:
+-------
+An element describes what you want to see on the screen. Only one element can render in react.
+
+Correct Example:
+----------------
+const element =
+Hello, world
+
+Thanks
+
+;
+ReactDOM.render(element, document.getElementById('root'));
+
+Wrong Example:
+--------------
+const element =
+Hello, world
+
+Thanks
+
+;
+ReactDOM.render(element, document.getElementById('root'));
+
+JSX:
+----
+It is called JSX, and it is a syntax extension to JavaScript. We recommend using it with React to describe what the UI should look like. JSX may remind you of a template language, but it comes with the full power of JavaScript. JSX produces React "elements".
+
+Example:(Not an exact example of JSX)
+const element = React.createElement(
+'h1',
+{className: 'greeting'},
+'Hello, world!'
+);
+
+Props:
+------
+Props are arguments passed into React components. Props are passed to components via HTML attributes.
+
+Example:
+--------
+
+We can access the props in the components via "props" variable. We can also send function inside props variable.
+
+Components:
+-----------
+
+*) There is two types of components.
+i) Class based components
+ii) Function Based components
+
+
+Class Based Components:
+-----------------------
+*) In which we can use state. But not on function components.
+*) The main advantage of class based components is "State" and "Lifecycle".
+*) "State" is nothing but object variable which holds data, like scope variable in angular.
+*) "Lifecycle" is nothing but number of in build function, like "ngOnInit" in angular. There is few functions are called on every components. Commonly used lifecycle methods is,
+
+#) componentDidMount = It will execute while component is started. It execute one time only once at initial time, while component mount.
+#) componentDidUpdate = It will execute while state or props are changed it will execute. It will execute multiple times, every time changes occurs.
+#) componentWillUnmount = It is invoked immediately before a component is unmounted and destroyed. Perform any necessary cleanup in this method, such as invalidating timers, canceling network requests, or cleaning up any subscriptions that were created in componentDidMount().
+
+*) In which we cannot update state value directly, we need to use setState() method.
+*) Props initialed on component called.
+*) Every function created inside class component should be declared inside constructor.
+*) Every component class is extended with react component.
+*) Every constructor need to call super() method, its default process. It will used to call the parent class constructor. In React, when you call super with props. React will make props available across the component through this.props.
+*) render method will return the DOM.
+
+Flow Diagram:
+-------------
+
+Mounting Updating Unmounting
+| |
+| |
+Constructor New props setState() forceUpdate() |
+| | | | |
+| | | | |
+__________________________________________________________________ |
+| | |
+| Render | |
+|___________________________________________________________________| |
+| | |
+| | |
+___________________________________________________________________ |
+| | |
+| React updates DOM and ref | |
+|___________________________________________________________________| |
+| | |
+| | |
+componentDidMount componentDidUpdate componentWillUnmount
+
+
+*) Reference link for Lifecycle : "https://github.com/learn-co-curriculum/react-component-lifecycle"
+
+
+Example:
+
+class Demo extends React.Component {
+constructor(props) {
+super(props);
+state = {
+input_field: ''
+}
+this.handleChange = this.handleChange.bind(this);
+}
+handleChange(e) {
+this.setState((prev) => {
+console.log(prev); //Check your conditions
+return {
+input_field : e.target.value
+}
+})
+}
+
+// 3. componentDidMount is called
+componentDidMount() {
+fetch(`http://localhost:3000/rooms/${this.state.roomId}/messages`)
+.then((r) => r.json())
+.then((messages) => this.setState({ messages }));
+}
+
+// 5. when setState is called, componentDidUpdate runs after render
+componentDidUpdate(prevProps, prevState) {
+if (prevState.roomId !== this.state.roomId) {
+fetch(`http://localhost:3000/rooms/${this.state.roomId}/messages`)
+.then((r) => r.json())
+.then((messages) => this.setState({ messages }));
+}
+}
+componentWillUnmount() {
+clearInterval(this.interval);
+}
+render() {
+return (
+
+Hello, {this.props.name}
+
+
+
+
+);
+}
+}
+
+
+Function Component:
+-------------------
+*) In function component, we will not use state and lifecycles, instead of we can use the hooks. In hooks there is various method begin with use like (useState()). Most commonly used hooks is "useState()" and "useEffect()"
+*) We cannot use hooks outside the normal function. We can only used inside the render function or function components.
+
+Example:
+--------
+import React, { useState, useEffect } from 'react';
+function Example() {
+const [count, setCount] = useState(0);
+useEffect(() => { document.title = `You clicked ${count} times`; });
+
+// Similar to componentDidMount and componentDidUpdate: useEffect(() => { // Update the document title using the browser API document.title = `You clicked ${count} times`; });
+return (
+
+You clicked {count} times
+
+setCount(count + 1)}>
+Click me
+
+
+);
+}
+
+*) In which, we can initialize state value on "useState"=> useState({input_field: ''}).
+*) In which above, "setCount" is a function which return state value.
+*) In which above, "useEffect" is used like method "componentDidUpdate()" in class based component. It calls every time state is updated.
+*) Don?t call Hooks inside loops, conditions, or nested functions.
+*) Don?t call Hooks from regular JavaScript functions.
+*) Reference link various api of hooks, "https://reactjs.org/docs/hooks-reference.html"
+
+
+Handling Events:
+----------------
+
+Handling events with React elements is very similar to handling events on DOM elements. There are some syntax differences:
+
+React events are named using camelCase, rather than lowercase.
+With JSX you pass a function as the event handler, rather than a string.
+
+Example 1:
+--------
+In normal html,
+
+Activate Lasers
+
+
+In JSX,
+
+Activate Lasers
+
+
+Example 2:
+----------
+function ActionLink() {
+function handleClick(e) {
+e.preventDefault();
+console.log('The link was clicked.');
+}
+return (
+
+Click me
+
+);
+}
+
+Example 3:
+----------
+In which passing arguments,
+this.deleteRow(id, e)}>Delete Row
+Delete Row
+
+Conditional Rendering:
+----------------------
+In React, you can create distinct components that encapsulate behavior you need. Then, you can render only some of them, depending on the state of your application.
+
+Conditional rendering in React works the same way conditions work in JavaScript. Use JavaScript operators like if or the conditional operator to create elements representing the current state, and let React update the UI to match them.
+
+Example:
+--------
+function Greeting(props) {
+const isLoggedIn = props.isLoggedIn;
+if (isLoggedIn) {
+return ;
+} else if(isLoggedIn==null) {
+return null;
+}
+return ;
+}
+ReactDOM.render(
+// Try changing to isLoggedIn={true}:
+, document.getElementById('root')
+);
+In which we return null instead of DOM.
+
+Lists and Keys:
+---------------
+In which learn about list the items or elements we want. In which we can use "map()" javascript function. In which there is a warning comes if you not add key on the element, so add key on the element using array index or other keys in array objects.
+
+Example:
+--------
+const todoItems = [1, 2, 3, 4, 5];
+const todoItems = todos.map((todo, index) =>
+// Only do this if items have no stable IDs
+
+{todo.text}
+
+);
+
+Forms:
+------
+It handle forms like normal html and javascript, very few changes will apply.
+
+Example:
+--------
+
+class Reservation extends React.Component {
+constructor(props) {
+super(props);
+this.state = {
+isGoing: true,
+numberOfGuests: 2
+};
+this.handleInputChange = this.handleInputChange.bind(this);
+}
+handleInputChange(event) {
+const target = event.target;
+const value = target.type === 'checkbox' ? target.checked : target.value;
+const name = target.name;
+this.setState({
+[name]: value
+});
+}
+render() {
+return (
+
+
+Is going:
+
+
+
+Number of guests:
+
+
+);
+}
+}
+
+Lifting State Up:
+-----------------
+Often, several components need to reflect the same changing data. We recommend lifting the shared state up to their closest common ancestor. Let?s see how this works in action.
+
+If sometimes we need to call parent function from child component, it can be achivable, by passing parent function in props and using props from child we can call it. Like function we can pass state values.
+
+Composition vs Inheritance:
+---------------------------
+Sometimes we cannot know child components, so we can pass the child components via props.
+
+Example:
+--------
+function Contacts() {
+return
+;
+}
+function Chat() {
+return
+;
+}
+function SplitPane(props) {
+return (
+
+
+{props.left}
+
+
+{props.right}
+
+
+);
+}
+function App() {
+return (
+
+}
+right={
+
+}
+/>
+);
+}
+ReactDOM.render(
+,
+document.getElementById('root')
+);
+
+Router:
+-------
+
+Primary Components:
+-------------------
+
+*) One important point is need to use "Switch", if you not use "Switch" then router will execute more than one components at a time if matchs, instead of refuse this case use "Switch".
+
+There are three primary categories of components in React Router:
+
+routers, like and
+route matchers, like and
+and navigation, like , , and
+
+We also like to think of the navigation components as ?route changers?.
+All of the components that you use in a web application should be imported from react-router-dom.
+
+Reference Link:
+-> "https://reactrouter.com/web/api/Hooks/usehistory"
+-> "https://www.sitepoint.com/react-router-complete-guide/"
+
+Example:
+--------
+// <BrowserRouter>
+http://example.com/about
+
+// <HashRouter>
+http://example.com/#/about
+
+Basic Example:
+--------------
+
+import React from "react";
+import ReactDOM from "react-dom";
+import App from "./App";
+import { BrowserRouter } from "react-router-dom";
+
+ReactDOM.render(
+,
+document.getElementById("root")
+);
+
+Example: Reference Link => "https://github.com/sitepoint-editors/react-router-demo"
+--------
+App File:
+---------
+import { BrowserRouter as Router, Switch, Route, useParams, Link } from "react-router-dom";
+} />
+
+
+PrivateRoute File:
+------------------
+const PrivateRoute = ({ component: Component, ...rest }) => {
+const location = useLocation();
+return (
+
+{
+fakeAuth.isAuthenticated === true ? :
+
+}
+
+);
+};
+
+ChildRoute File:
+-----------------
+
+import { Link, Route, useRouteMatch } from "react-router-dom";
+
+const { url } = useRouteMatch();
+
+const linkList = productData.map((product) => {
+return (
+
+{product.name}
+
+);
+});
+
+return (
+
+//[You can get product Id by this way] import { useParams } from "react-router-dom"; const { productId } = useParams();
+
+Please select a product.
+
+
+)
+
+Navigate via JS: //Need to work on it for testing purpose.
+----------------
+import { useHistory } from "react-router-dom";
+const history = useHistory();
+function handleClick() {
+history.push("/home");
+}
+
+Redux:
+------
+It is used for global variable, don't forget if the page refreshed then all values are reset to default value.
+Reference: "https://github.com/gothinkster/react-redux-realworld-example-app/tree/master/src"
+
+*) In redux, get state value using "useSelector", because if state value is changed on reducer using dispatch, then getted value also upaded.
+*) In redux, mapStateProps is get current value of state, which is not update value if state is changed.
+*) When state or redux state value is changed then react re-render its component page, so don't dispatch anything on functional components on open, instead use "useEffect", because when dispatch will change state value and once again component reload and again dispatch the state or action.
+*) Redux Thunk is a middleware that allows you to call the action creators that return a function(thunk) which takes the store's dispatch method as the argument and which is afterwards used to dispatch the synchronous action after the API or side effects has been finished.
+
+Inside reducer file, action param will not console log.
+
+Follow the steps to apply reducers:
+Step 1: Install required packages. [npm install --save redux], [npm install --save react-redux], [npm install --save-dev redux-devtools]
+Step 2: In index.js file, import "provider" from redux and apply it to content.
+
+Simple Example:
+---------------
+import React from 'react';
+import ReactDOM from 'react-dom';
+import './index.css';
+import App from './App';
+import { Provider } from 'react-redux';
+import { createStore } from 'redux';
+import { combineReducers } from 'redux';
+
+const initialState = {
+  value: 0
+};
+function counterReducer(state = initialState, action) {
+  switch (action.type) {
+    case 'counter/incremented':
+      return { ...state, value: state.value + 1 }
+    case 'counter/decremented':
+      return { ...state, value: state.value - 1 }
+    default:
+      return state
+  }
+}
+const store = createStore(counterReducer);
+store.dispatch({ type: 'counter/incremented' })
+const state = store.getState()
+console.log(state);
+ReactDOM.render(
+  <Provider store={store}>
+    <App />
+  </Provider>
+  ,
+  document.getElementById('root')
+);
+
+
+Github Example:
+---------------
+
+Example:
+--------
+Index.js
+--------
+import { Provider } from 'react-redux';
+import { store, history} from './store';
+ReactDOM.render((
+  <Provider store={store}>
+    <ConnectedRouter history={history}>
+      <Switch>
+        <Route path="/" component={App} />
+      </Switch>
+    </ConnectedRouter>
+  </Provider>
+), document.getElementById('root'));
+Step 3: Then create store and history files mentioned above. In which import "createStore" from redux and set reducer on it.
+Example:
+--------
+store.js
+---------
+import { createStore } from 'redux';
+import reducer from './reducers/reducer'
+const store = createStore(reducer);
+//createStore(reducer, [preloadedState], [enhancer])
+A reducer is a function that returns the next state of app. A preloadedState is an optional argument and is the initial state of your app. An enancer is also an optional argument. It will help you enhance store with third-party capabilities.
+Step 4: Then create reducer file mentioned above. In which import "combineReducers" from redux and combine all reducers on it. In which "routerReducer" is also included, but can't find the reason, why adding this.
+Example:
+--------
+reducer.js
+----------
+import { combineReducers } from 'redux';
+import { routerReducer } from 'react-router-redux';
+import auth from './reducers/auth';
+import common from './reducers/common';
+
+export default combineReducers({
+auth,
+common,
+router: routerReducer
+});
+Step 5: Then create auth, common file mentioned above.
+Example:
+--------
+auth.js
+-------
+import { LOGIN, REGISTER, LOGIN_PAGE_UNLOADED } from '../constants/actionTypes';
+
+const initial_state = {};
+export default (state = initial_state, action) => {
+switch (action.type) {
+case LOGIN:
+case REGISTER:
+return {
+...state,
+inProgress: false,
+errors: action.error ? action.payload.errors : null
+};
+case LOGIN_PAGE_UNLOADED:
+return {};
+default:
+return state;
+}
+return state;
+};
+Step 6: Then create actionTypes file mentioned above.
+Example:
+--------
+actionTypes.js
+--------------
+export const LOGIN = 'LOGIN';
+export const LOGOUT = 'LOGOUT';
+export const REGISTER = 'REGISTER';
+export const LOGIN_PAGE_UNLOADED = 'LOGIN_PAGE_UNLOADED';
+Step 7: All the setup is done, now we can get state values and update.
+const mapDispatchToProps = dispatch => ({});
+
+
+
+
+
+
+Advanced Guides:
+----------------
+
+Render Props:
+-------------
+The term ?render prop? refers to a technique for sharing code between React components using a prop whose value is a function. A component with a render prop takes a function that returns a React element and calls it instead of implementing its own render logic.
+
+In which "render" keyword is must to use.
+
+Example 1:
+----------
+(
+Hello {data.target}
+
+)}/>
+
+Example 2:
+----------
+Home
+} />
+,
+
+Example 3:
+----------
+Props inside render function
+(
+
+)}/>
+
+
+
+
+Packages:
+---------
+"formik" is package is used to create form. For adding build in validation use "yup" package in it. Use the command "npm install yup --save"
+
+Formik:
+-------
+
+Add formik on modules,
+*) npm install formik --save
+
+Basic example:
+--------------
+
+import React from 'react';
+import { useFormik } from 'formik';
+
+const SignupForm = () => {
+// Pass the useFormik() hook initial form values and a submit function that will
+// be called when the form is submitted
+const formik = useFormik({
+initialValues: {
+email: '',
+},
+onSubmit: values => {
+alert(JSON.stringify(values, null, 2));
+},
+});
+return (
+
+Email Address
+Submit
+
+);
+};
+
+
+
+Example:
+--------
+
+import React from 'react';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+const SignupForm = () => {
+const formik = useFormik({
+initialValues: {
+firstName: '',
+lastName: '',
+email: '',
+},
+validationSchema: Yup.object({
+firstName: Yup.string()
+.max(15, 'Must be 15 characters or less')
+.required('Required'),
+lastName: Yup.string()
+.max(20, 'Must be 20 characters or less')
+.required('Required'),
+email: Yup.string()
+.email('Invalid email address')
+.required('Required'),
+}),
+onSubmit: values => {
+alert(JSON.stringify(values, null, 2));
+},
+});
+return (
+
+
+First Name
+
+{formik.touched.firstName && formik.errors.firstName ? (
+{formik.errors.firstName}
+
+) : null}
+
+Last Name
+
+{formik.touched.lastName && formik.errors.lastName ? (
+{formik.errors.lastName}
+
+) : null}
+
+Email Address
+
+{formik.touched.email && formik.errors.email ? (
+{formik.errors.email}
+
+) : null}
+
+Submit
+
+);
+};
+
+Example 3:
+----------
+
+import React from 'react';
+import { Formik, Form, Field } from 'formik';
+
+function validateEmail(value) {
+let error;
+if (!value) {
+error = 'Required';
+} else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(value)) {
+error = 'Invalid email address';
+}
+return error;
+}
+function validateUsername(value) {
+let error;
+if (value === 'admin') {
+error = 'Nice try!';
+}
+return error;
+}
+export const FieldLevelValidationExample = () => (
+
+Signup
+
+{
+// same shape as initial values
+console.log(values);
+}}
+>
+{({ errors, touched, isValidating }) => (
+
+
+{errors.email && touched.email &&
+{errors.email}
+}
+
+
+{errors.username && touched.username &&
+{errors.username}
+}
+
+Submit
+
+)}
+
+);
+
+Refs and the DOM:
+-----------------
+Refs provide a way to access DOM nodes or React elements created in the render method.
+
+Example:
+--------
+class CustomTextInput extends React.Component {
+constructor(props) {
+super(props);
+// create a ref to store the textInput DOM element
+this.textInput = React.createRef(); this.focusTextInput = this.focusTextInput.bind(this);
+}
+focusTextInput() {
+// Explicitly focus the text input using the raw DOM API
+// Note: we're accessing "current" to get the DOM node
+this.textInput.current.focus();
+}
+render() {
+// tell React that we want to associate the ref
+// with the `textInput` that we created in the constructor
+return (
+
+
+);
+}
+}
+
+Forwarding Refs:
+----------------
+
+Ref forwarding is a technique for automatically passing a ref through a component to one of its children. This is typically not necessary for most components in the application. However, it can be useful for some kinds of components, especially in reusable component libraries. The most common scenarios are described below.
+
+Example:
+--------
+const FancyButton = React.forwardRef((props, ref) => ( {props.children}));
+// You can now get a ref directly to the DOM button:
+const ref = React.createRef();
+Click me!;
+
+
+Typechecking With PropTypes:
+----------------------------
+
+Validating the props of the component. Reference Link: "https://reactjs.org/docs/typechecking-with-proptypes.html#gatsby-focus-wrapper"
+
+Example:
+--------
+import PropTypes from 'prop-types';
+class MyComponent extends React.Component {
+render() {
+// This must be exactly one element or it will warn.
+const children = this.props.children;
+return (
+
+{children}
+
+);
+}
+}
+
+MyComponent.propTypes = {
+children: PropTypes.element.isRequired
+};
+
+Default props Example:
+----------------------
+class Greeting extends React.Component {
+render() {
+return (
+Hello, {this.props.name}
+
+);
+}
+}
+
+// Specifies the default values for props:
+Greeting.defaultProps = {
+name: 'Stranger'
+};
+
+// Renders "Hello, Stranger":
+ReactDOM.render(
+,
+document.getElementById('example')
+);
+
+
+*) On react-dropzone, we used "Filereader" which is running continuely, so use react "useCallback" its for only read if data change(after uploaded)
+
+
+Example of props:
+-----------------
+In Content.js
+
+<Firstform detail={detail}/>
+
+In Firstform.js
+
+import React, {useState} from 'react';
+
+function Firstform(props) {
+    const [count, setCount] = useState(0);
+    function handle(event) {
+        console.log(event.target.value);
+        console.log(count);
+    }
+    const inp = props.detail.map((name) => 
+        <div key={name.id}>
+            <label>
+                {name.name}
+                <input onChange={handle} onFocus={() => setCount(count + 1)} name={name.name} />
+            </label>
+        </div>
+    ) 
+    return (
+        <div>
+            <h1>My First Form</h1>
+            <form>
+                { inp }
+            </form>
+        </div>
+    );
+}
+
+* Above we use hook, which is used instead of state, because in function we can't use state. "const [count, setCount] = useState(0);" "<input onChange={handle} onFocus={() => setCount(count + 1)} name={name.name} />"
+* Above we need to specify key, if iterat array and make an element, like above.
+* Above we can create handle function inside the render function.
+
+* React always casesentive, because it uses "JSX", it is little different from the javascript. For example "<div class="test">" it is normal, but in react "<div className="test">". And another example "<div style="backgroundColor: red;">", in which "background-color" is noted by "backgroundColor".
+
+* In react, there is few lifecycle method like ngOnInt on angular, one of the important one is "componentDidMount". First "render method" runs and then second "componentDidMount" method. "componentDidMount" method runs when component loaded.
+
+* There is event handler in react, but all are equal to javascript, but only difference is camel case. For example => in javascript(onchange), but in react (onChange).
+* Every event handler calls then it render the class component again.
+
+Event Handler Example:
+-----------------------
+
+class Secondform extends React.Component {
+    constructor(props) {
+        super(props);
+        this.textHandle = this.textHandle.bind(this);
+        this.checkHandle = this.checkHandle.bind(this);
+        //this.componentDidMount=this.componentDidMount.bind(this);
+        this.state = {
+            name: '',
+            email: '',
+            yes: false
+        }
+    }
+    componentDidMount() {
+        console.log('Componet Mounted', this.props);
+    }
+    render() {
+        console.log('Render', this.props);
+        console.log('Final =>', this.state);
+        return (
+            <div>
+                <h1>
+                    My Second Form by class
+                </h1>
+                <form>
+                    <input id="name" name="name" onChange={this.textHandle}  valud={this.state.name} />
+                    <input id="email" name="email" onChange={this.textHandle} valud={this.state.email} />
+                    <br/>
+                    <label>Yes / No<input type="checkbox" id="yes" name="yes" onChange={this.checkHandle} checked={this.state.yes} /></label>
+                </form>
+            </div>
+        )
+    }
+    textHandle(event) {
+        const { name, value } = event.target;
+        this.setState((prev) => {
+            console.log('setstate =>', prev, name, value);
+            return {
+                [name] : value
+            }
+        });
+        
+    }
+    checkHandle(event) {
+        const { name, checked } = event.target;
+        this.setState((prev) => {
+            return {
+                [name]: checked
+            }
+        })
+    }  
+}
+
+* Below example shows concat operator in element attributes.
+Example:
+--------
+<input type="checkbox" className="form-control" name={"education["+index+"]"} id={"education_"+index} value={arr} onChange={this.handleCheck} />
+render() {
+        return (
+            <section>
+                <h1>
+                    Final Form
+                </h1>
+                <div className="form-group">
+                    <label htmlFor="name">Name</label>
+                    <input type="text" className="form-control" name="name" id="name"  placeholder="Name" />
+                </div>
+                <div className="form-group">
+                    <label htmlFor="email">Email</label>
+                    <input type="text" className="form-control" name="email" id="email"  placeholder="Email" />
+                </div>
+                <div className="form-group">
+                    <label htmlFor="male">
+                        Male
+                        <input type="radio" className="form-control" name="gender" id="male" value="male" />
+                    </label>
+                    <label htmlFor="female">
+                        Female
+                        <input type="radio" className="form-control" name="gender" id="female" value="female" />
+                    </label>
+                </div>
+                {this.state.edu_col.map((arr, index) => 
+                    //console.log(index, arr)
+                    <div className="form-group" key={index}>
+                        <label htmlFor="education">
+                            {arr}
+                            <input type="checkbox" className="form-control" name={"education["+index+"]"} id={"education_"+index} value={arr} onChange={this.handleCheck} />
+                        </label>
+                    </div>
+                )}
+                
+                
+            </section>
+        )
+    }
+    handleCheck(event) {
+        //console.log(event);
+        const { name, checked } = event.target;
+    }
+	
+	
+* Form Submit example below,
+
+class Finalform extends React.Component {
+    constructor() {
+        super();
+        this.state = {
+            edu_col: ['B.Tech'],
+            all_country: ['India', 'Australia', 'England', 'Japan'],
+            name: '',
+            email: '',
+            gender: '',
+            education: false,
+            country: ''
+        }
+        this.handleCheck = this.handleCheck.bind(this);
+        this.handelSubmit = this.handelSubmit.bind(this);
+    }
+    render() {
+        console.log(this.state);
+        return (
+            <section>
+                <h1>
+                    Final Form
+                </h1>
+                <form onSubmit={this.handelSubmit}>
+                    <div className="form-group">
+                        <label htmlFor="name">Name</label>
+                        <input type="text" className="form-control" name="name" id="name"  placeholder="Name"  onChange={this.handleCheck} />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="email">Email</label>
+                        <input type="text" className="form-control" name="email" id="email"  placeholder="Email"  onChange={this.handleCheck} />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="male">
+                            Male
+                            <input type="radio" className="form-control" name="gender" id="male" value="male"  onChange={this.handleCheck} />
+                        </label>
+                        <label htmlFor="female">
+                            Female
+                            <input type="radio" className="form-control" name="gender" id="female" value="female"  onChange={this.handleCheck} />
+                        </label>
+                    </div>
+                    {this.state.edu_col.map((arr, index) => 
+                        //console.log(index, arr)
+                        <div className="form-group" key={index}>
+                            <label htmlFor="education">
+                                {arr}
+                                <input type="checkbox" className="form-control" name={"education["+index+"]"} id={"education_"+index} value={arr} onChange={this.handleCheck} />
+                            </label>
+                        </div>
+                    )}
+                    <select name="country" id="country" onChange={this.handleCheck}>
+                        <option  value="">--Select Country--</option>
+                        {this.state.all_country.map((arr, index) => 
+                            <option  key={index} value={index}>{arr}</option>
+                        )}
+                    </select>
+                    <button type="submit">Submit</button>
+                </form>
+            </section>
+        )
+    }
+    handleCheck(event) {
+        const { type, name, checked, value } = event.target;
+        if(type === 'checkbox') {
+            this.setState({
+                ["education"]: checked
+            })
+        } else {
+            this.setState({
+                [name]: value
+            })
+        }
+    }
+    handelSubmit(event) {
+        event.preventDefault();
+        console.log(this.state);
+    }
+
+
+Route example:
+--------------
+
+import React, { Suspense, lazy } from 'react';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+
+const Firstform = lazy(() => import('./Firstform'));
+const Secondform = lazy(() => import('./Secondform'));
+const Finalform = lazy(() => import('./Finalform'));
+
+class Routers extends React.Component {
+    constructor() {
+        super();
+    }
+    render() {
+        var detail = [
+            {
+                id: 0,
+                name: 'name'
+            },
+            {
+                id: 1,
+                name: 'email'
+            }
+        ];        
+        return (
+            <Router>
+                <Suspense fallback={<div>Loading...</div>}>		//It is used for loading
+                    <Switch>
+                        <Route exact path="/" component={() => <Firstform detail={detail}/>} />
+                        <Route exact path="/second" component={() => <Secondform detail={detail}/> } />
+                        <Route exact path="/final" component={() => <Finalform detail={this.detail}/>} />
+                    </Switch>
+                </Suspense>
+            </Router>
+        );
+    }
+}
+export default Routers
+
+*) Lifting state up: It is nothing but the pass the variable or function on props and access the parent function from child function.
+
+Compostion Vs Inheritance: It is tells, we can pass component via props, and place DOMs in between component tags.
+
+Example: 
+
+function Dialog(props) {
+  return (
+    <FancyBorder color="blue">
+      <h1 className="Dialog-title">
+        {props.title}
+      </h1>
+      <p className="Dialog-message">
+        {props.message}
+      </p>
+      {props.children}    </FancyBorder>
+  );
+}
+
+class SignUpDialog extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSignUp = this.handleSignUp.bind(this);
+    this.state = {login: ''};
+  }
+
+  render() {
+    return (
+      <Dialog title="Mars Exploration Program"
+              message="How should we refer to you?">
+        <input value={this.state.login}               onChange={this.handleChange} />        <button onClick={this.handleSignUp}>          Sign Me Up!        </button>      </Dialog>
+    );
+  }
+
+  handleChange(e) {
+    this.setState({login: e.target.value});
+  }
+
+  handleSignUp() {
+    alert(`Welcome aboard, ${this.state.login}!`);
+  }
+}
+
+
+*) When API run, use try and catch block for handling error.
+
+For solve the default option for dropdown
+https://github.com/fraserxu/react-dropdown/blob/master/example/objectArrayExample.js
+
+*) In react "try catch" method for API, based on response status it is catched on error, when response whithout 200 or 201 then it goes into catch, so for validation error message set status as 200 or 201.
+
+
+For Private Route:
+-------------------
+Refer Below links:
+https://github.com/shamahoque/mern-skeleton/blob/second-edition/client/auth/PrivateRoute.js
+https://github.com/shamahoque/mern-skeleton/blob/second-edition/client/MainRouter.js
+https://reactrouter.com/web/api/Route

@@ -1,0 +1,1850 @@
+MongoDB:
+--------
+*) MongoDB is an open-source document database and leading NoSQL database. MongoDB is written in C++.
+*) MongoDB is a cross-platform, document oriented database that provides, high performance, high availability, and easy scalability. MongoDB works on concept of collection and document.
+
+RockMongo:
+----------
+RockMongo is a MongoDB administration tool using which you can manage your server, databases, collections, documents, indexes, and a lot more. It provides a very user-friendly way for reading, writing, and creating documents. It is similar to PHPMyAdmin tool for PHP and MySQL.
+
+Reference Link => "https://www.tutorialspoint.com/mongodb/working_with_rockmongo.htm"
+
+Database:
+---------
+Database is a physical container for collections. Each database gets its own set of files on the file system. A single MongoDB server typically has multiple databases.
+
+Collection:
+-----------
+Collection is a group of MongoDB documents. It is the equivalent of an RDBMS table. A collection exists within a single database. Collections do not enforce a schema. Documents within a collection can have different fields. Typically, all documents in a collection are of similar or related purpose.
+
+Advantages of MongoDB over RDBMS:
+---------------------------------
+#) Schema less
+#) Ease of scale-out
+#) Structure of a single object is clear.
+#) No complex joins.
+#) Uses internal memory for storing the (windowed) working set, enabling faster access of data.
+
+
+Installation Process:
+---------------------
+
+Reference Link	=>	"https://docs.mongodb.com/manual/tutorial/install-mongodb-on-windows/"
+https://docs.mongodb.com/manual/tutorial/install-mongodb-on-windows/#std-label-run-mongodb-from-cmd
+
+* Installed Mongodb as windows service.
+* Mention your custom data path.
+* Choosed Complete option
+
+Open Mongodb Instruction:
+
+i) Go path => "C:\Program Files\MongoDB\Server\4.4\bin\mongod.exe"
+ii) Execute path "mongo"
+
+
+Data MOdeling:
+--------------
+Data in MongoDB has a flexible schema.documents in the same collection. They do not need to have the same set of fields or structure Common fields in a collection?s documents may hold different types of data.
+MongoDB provides two types of data models:
+i) Embedded data model
+ii) Normalized data model
+Based on the requirement, you can use either of the models while preparing your document.
+
+Embedded Data Model:
+---------------------
+
+In this model, you can have (embed) all the related data in a single document, it is also known as de-normalized data model.
+
+Example:
+--------
+
+For example, assume we are getting the details of employees in three different documents namely, Personal_details, Contact and, Address, you can embed all the three documents in a single one as shown below ?
+
+{
+_id: ,
+Emp_ID: "10025AE336"
+Personal_details:{
+First_Name: "Radhika",
+Last_Name: "Sharma",
+Date_Of_Birth: "1995-09-26"
+},
+Contact: {
+e-mail: "radhika_sharma.123@gmail.com",
+phone: "9848022338"
+},
+Address: {
+city: "Hyderabad",
+Area: "Madapur",
+State: "Telangana"
+}
+}
+
+Normalized Data Model:
+----------------------
+
+In this model, you can refer the sub documents in the original document, using references. For example, you can re-write the above document in the normalized model as:
+
+Example:
+--------
+
+Employee:
+
+{
+_id: ,
+Emp_ID: "10025AE336"
+}
+
+Personal_details:
+
+{
+_id: ,
+empDocID: " ObjectId101",
+First_Name: "Radhika",
+Last_Name: "Sharma",
+Date_Of_Birth: "1995-09-26"
+}
+
+Contact:
+
+{
+_id: ,
+empDocID: " ObjectId101",
+e-mail: "radhika_sharma.123@gmail.com",
+phone: "9848022338"
+}
+
+Address:
+
+{
+_id: ,
+empDocID: " ObjectId101",
+city: "Hyderabad",
+Area: "Madapur",
+State: "Telangana"
+}
+
+
+Considerations while designing Schema in MongoDB:
+-------------------------------------------------
+-> Design your schema according to user requirements.
+
+-> Combine objects into one document if you will use them together. Otherwise separate them (but make sure there should not be need of joins).
+
+-> Duplicate the data (but limited) because disk space is cheap as compare to compute time.
+
+-> Do joins while write, not on read.
+
+-> Optimize your schema for most frequent use cases.
+
+-> Do complex aggregation in the schema.
+
+
+Commands and Actions:
+----------------------
+Database Actions:
+-----------------
+"use DATABASE_NAME"
+
+*) MongoDB use DATABASE_NAME is used to create database. The command will create a new database if it doesn't exist, otherwise it will return the existing database.
+
+"db"
+
+*) To check your currently selected database, use the command db
+
+"show dbs"
+
+*) If you want to check your databases list, use the command show dbs.
+*) Your created database (mydb) is not present in list. To display database, you need to insert at least one document into it.
+
+>"db.movie.insert({"name":"tutorials point"})"
+>"show dbs
+local 0.78125GB
+mydb 0.23012GB
+test 0.23012GB"
+
+In MongoDB default database is test. If you didn't create any database, then collections will be stored in test database. Above "movie" database is not created.
+
+"db.dropDatabase()"
+
+*) This will delete the selected database. If you have not selected any database, then it will delete default 'test' database.
+
+Collections: (It is like table in mysql)
+------------
+"db.createCollection(name, options)" => Syntax
+
+Parameter Type Description
+Name String Name of the collection to be created
+Options Document (Optional) Specify options about memory size and indexing
+
+Field Type Description
+capped Boolean (Optional) If true, enables a capped collection. Capped collection is a fixed size collection that automatically overwrites
+its oldest entries when it reaches its maximum size. If you specify true, you need to specify size parameter also.
+autoIndexId Boolean (Optional) If true, automatically create index on _id fields. Default value is false.
+size number (Optional) Specifies a maximum size in bytes for a capped collection. If capped is true, then you need to specify this
+field also.
+max number (Optional) Specifies the maximum number of documents allowed in the capped collection.
+
+Example:
+--------
+
+db.createCollection("mycol", { capped : true, autoIndexID : true, size : 6142800, max : 10000 } )
+
+*) In MongoDB, you don't need to create collection. MongoDB creates collection automatically, when you insert some document.
+
+Example:
+--------
+
+">db.tutorialspoint.insert({"name" : "tutorialspoint"}),
+WriteResult({ "nInserted" : 1 })"
+">show collections
+mycol
+mycollection
+system.indexes
+tutorialspoint
+>"
+
+Above "tutorialspoint" collections is not created, but it automatically created when you insert data.
+
+Drop Collections:
+-----------------
+
+"db.COLLECTION_NAME.drop()" => Syntax
+
+Example:
+--------
+
+">db.mycollection.drop()
+true
+>"
+
+Data Types:
+-----------
+It supports many data types, check it on this link "https://www.tutorialspoint.com/mongodb/mongodb_datatype.htm".
+
+String ? This is the most commonly used datatype to store the data. String in MongoDB must be UTF-8 valid.
+
+Integer ? This type is used to store a numerical value. Integer can be 32 bit or 64 bit depending upon your server.
+
+Boolean ? This type is used to store a boolean (true/ false) value.
+
+Double ? This type is used to store floating point values.
+
+Min/ Max keys ? This type is used to compare a value against the lowest and highest BSON elements.
+
+Arrays ? This type is used to store arrays or list or multiple values into one key.
+
+Timestamp ? ctimestamp. This can be handy for recording when a document has been modified or added.
+
+Object ? This datatype is used for embedded documents.
+
+Null ? This type is used to store a Null value.
+
+Symbol ? This datatype is used identically to a string; however, it's generally reserved for languages that use a specific symbol type.
+
+Date ? This datatype is used to store the current date or time in UNIX time format. You can specify your own date time by creating object of Date and passing day, month, year into it.
+
+Object ID ? This datatype is used to store the document?s ID.
+
+Binary data ? This datatype is used to store binary data.
+
+Code ? This datatype is used to store JavaScript code into the document.
+
+Regular expression ? This datatype is used to store regular expression.
+
+
+Data Insert:
+------------
+
+To insert data into MongoDB collection, you need to use MongoDB's insert() or save() method.
+
+Syntax:
+-------
+db.COLLECTION_NAME.insert(document)
+
+Example:
+--------
+
+> db.createCollection("post")
+> db.post.insert([
+{
+title: "MongoDB Overview",
+description: "MongoDB is no SQL database",
+by: "tutorials point",
+url: "http://www.tutorialspoint.com",
+tags: ["mongodb", "database", "NoSQL"],
+likes: 100
+},
+{
+title: "NoSQL Database",
+description: "NoSQL database doesn't have tables",
+by: "tutorials point",
+url: "http://www.tutorialspoint.com",
+tags: ["mongodb", "database", "NoSQL"],
+likes: 20,
+comments: [
+{
+user:"user1",
+message: "My first comment",
+dateCreated: new Date(2013,11,10,2,35),
+like: 0
+}
+]
+}
+])
+
+*) To insert the document you can use db.post.save(document) also. If you don't specify _id in the document then save() method will work same as insert() method. If you specify _id then it will replace whole data of document containing _id as specified in save() method.
+
+
+If you need to insert only one document into a collection you can use this method.
+
+Syntax:
+-------
+>db.COLLECTION_NAME.insertOne(document)
+
+
+You can insert multiple documents using the insertMany() method. To this method you need to pass an array of documents.
+
+Example:
+--------
+
+> db.empDetails.insertMany(
+[
+{
+First_Name: "Radhika",
+Last_Name: "Sharma",
+Date_Of_Birth: "1995-09-26",
+e_mail: "radhika_sharma.123@gmail.com",
+phone: "9000012345"
+},
+{
+First_Name: "Rachel",
+Last_Name: "Christopher",
+Date_Of_Birth: "1990-02-16",
+e_mail: "Rachel_Christopher.123@gmail.com",
+phone: "9000054321"
+},
+{
+First_Name: "Fathima",
+Last_Name: "Sheik",
+Date_Of_Birth: "1990-02-16",
+e_mail: "Fathima_Sheik.123@gmail.com",
+phone: "9000054321"
+}
+]
+)
+
+Query or Fetch data from collections:
+-------------------------------------
+
+To query data from MongoDB collection, you need to use MongoDB's find() method.
+
+Syntax:
+-------
+
+>db.COLLECTION_NAME.find()
+
+Example:
+--------
+
+Step 1:
+-------
+
+> use sampleDB
+switched to db sampleDB
+> db.createCollection("mycol")
+{ "ok" : 1 }
+>
+
+Step 2:
+-------
+
+> db.mycol.insert([
+{
+title: "MongoDB Overview",
+description: "MongoDB is no SQL database",
+by: "tutorials point",
+url: "http://www.tutorialspoint.com",
+tags: ["mongodb", "database", "NoSQL"],
+likes: 100
+},
+{
+title: "NoSQL Database",
+description: "NoSQL database doesn't have tables",
+by: "tutorials point",
+url: "http://www.tutorialspoint.com",
+tags: ["mongodb", "database", "NoSQL"],
+likes: 20,
+comments: [
+{
+user:"user1",
+message: "My first comment",
+dateCreated: new Date(2013,11,10,2,35),
+like: 0
+}
+]
+}
+])
+
+Step 3:
+-------
+
+> db.mycol.find()
+{ "_id" : ObjectId("5dd4e2cc0821d3b44607534c"), "title" : "MongoDB Overview", "description" : "MongoDB is no SQL database", "by" : "tutorials point", "url" : "http://www.tutorialspoint.com", "tags" : [ "mongodb", "database", "NoSQL" ], "likes" : 100 }
+{ "_id" : ObjectId("5dd4e2cc0821d3b44607534d"), "title" : "NoSQL Database", "description" : "NoSQL database doesn't have tables", "by" : "tutorials point", "url" : "http://www.tutorialspoint.com", "tags" : [ "mongodb", "database", "NoSQL" ], "likes" : 20, "comments" : [ { "user" : "user1", "message" : "My first comment", "dateCreated" : ISODate("2013-12-09T21:05:00Z"), "like" : 0 } ] }
+>
+
+*) To display the results in a formatted way, you can use pretty() method.
+
+> db.mycol.find().pretty()
+{
+"_id" : ObjectId("5dd4e2cc0821d3b44607534c"),
+"title" : "MongoDB Overview",
+"description" : "MongoDB is no SQL database",
+"by" : "tutorials point",
+"url" : "http://www.tutorialspoint.com",
+"tags" : [
+"mongodb",
+"database",
+"NoSQL"
+],
+"likes" : 100
+}
+{
+"_id" : ObjectId("5dd4e2cc0821d3b44607534d"),
+"title" : "NoSQL Database",
+"description" : "NoSQL database doesn't have tables",
+"by" : "tutorials point",
+"url" : "http://www.tutorialspoint.com",
+"tags" : [
+"mongodb",
+"database",
+"NoSQL"
+],
+"likes" : 20,
+"comments" : [
+{
+"user" : "user1",
+"message" : "My first comment",
+"dateCreated" : ISODate("2013-12-09T21:05:00Z"),
+"like" : 0
+}
+]
+}
+
+*) Apart from the find() method, there is findOne() method, that returns only one document.
+
+Syntax:
+-------
+>db.COLLECTIONNAME.findOne()
+
+Example:
+--------
+> db.mycol.findOne({title: "MongoDB Overview"})
+{
+"_id" : ObjectId("5dd6542170fb13eec3963bf0"),
+"title" : "MongoDB Overview",
+"description" : "MongoDB is no SQL database",
+"by" : "tutorials point",
+"url" : "http://www.tutorialspoint.com",
+"tags" : [
+"mongodb",
+"database",
+"NoSQL"
+],
+"likes" : 100
+}
+
+Where in query using mangodb:
+-----------------------------
+
+Refer this link "https://www.tutorialspoint.com/mongodb/mongodb_query_document.htm" and visit end of the page.
+
+RDBMS Where Clause Equivalents in MongoDB
+
+To query the document on the basis of some condition, you can use following operations.
+
+Operation Syntax Example RDBMS Equivalent
+Equality {:{$eg;}} db.mycol.find({"by":"tutorials point"}).pretty() where by =
+'tutorials point'
+Less Than {:{$lt:}} db.mycol.find({"likes":{$lt:50}}).pretty() where likes < 50
+Less Than Equals {:{$lte:}} db.mycol.find({"likes":{$lte:50}}).pretty() where likes <= 50
+Greater Than {:{$gt:}} db.mycol.find({"likes":{$gt:50}}).pretty() where likes > 50
+Greater Than Equals {:{$gte:}} db.mycol.find({"likes":{$gte:50}}).pretty() where likes >= 50
+Not Equals {:{$ne:}} db.mycol.find({"likes":{$ne:50}}).pretty() where likes != 50
+Values in an array {:{$in:[, ,??]}} db.mycol.find({"name":{$in:["Raj", "Ram", "Raghu"]}}).pretty() Where name
+matches any of
+the value in
+:["Raj", "Ram", "Raghu"]
+Values not in an array {:{$nin:}} db.mycol.find({"name":{$nin:["Ramu", "Raghav"]}}).pretty() Where name
+values is not in the array :["Ramu", "Raghav"] or, doesn?t exist at all
+
+AND in MongoDB:
+---------------
+
+Syntax:
+-------
+
+To query documents based on the AND condition, you need to use $and keyword. Following is the basic syntax of AND ?
+
+>db.mycol.find({ $and: [ {:}, { :} ] })
+
+Example:
+--------
+
+Following example will show all the tutorials written by 'tutorials point' and whose title is 'MongoDB Overview'.
+
+> db.mycol.find({$and:[{"by":"tutorials point"},{"title": "MongoDB Overview"}]}).pretty()
+{
+"_id" : ObjectId("5dd4e2cc0821d3b44607534c"),
+"title" : "MongoDB Overview",
+"description" : "MongoDB is no SQL database",
+"by" : "tutorials point",
+"url" : "http://www.tutorialspoint.com",
+"tags" : [
+"mongodb",
+"database",
+"NoSQL"
+],
+"likes" : 100
+}
+>
+
+For the above given example, equivalent where clause will be ' where by = 'tutorials point' AND title = 'MongoDB Overview' '. You can pass any number of key, value pairs in find clause.
+
+
+OR in MongoDB:
+--------------
+
+Syntax:
+-------
+
+To query documents based on the OR condition, you need to use $or keyword. Following is the basic syntax of OR ?
+
+>db.mycol.find(
+{
+$or: [
+{key1: value1}, {key2:value2}
+]
+}
+).pretty()
+
+Example:
+--------
+
+Following example will show all the tutorials written by 'tutorials point' or whose title is 'MongoDB Overview'.
+
+>db.mycol.find({$or:[{"by":"tutorials point"},{"title": "MongoDB Overview"}]}).pretty()
+{
+"_id": ObjectId(7df78ad8902c),
+"title": "MongoDB Overview",
+"description": "MongoDB is no sql database",
+"by": "tutorials point",
+"url": "http://www.tutorialspoint.com",
+"tags": ["mongodb", "database", "NoSQL"],
+"likes": "100"
+}
+>
+
+
+Using AND and OR Together:
+--------------------------
+
+Example:
+--------
+
+The following example will show the documents that have likes greater than 10 and whose title is either 'MongoDB Overview' or by is 'tutorials point'. Equivalent SQL where clause is 'where likes>10 AND (by = 'tutorials point' OR title = 'MongoDB Overview')'
+
+>db.mycol.find({"likes": {$gt:10}, $or: [{"by": "tutorials point"},
+{"title": "MongoDB Overview"}]}).pretty()
+{
+"_id": ObjectId(7df78ad8902c),
+"title": "MongoDB Overview",
+"description": "MongoDB is no sql database",
+"by": "tutorials point",
+"url": "http://www.tutorialspoint.com",
+"tags": ["mongodb", "database", "NoSQL"],
+"likes": "100"
+}
+>
+
+NOR in MongoDB:
+---------------
+
+Syntax:
+-------
+
+To query documents based on the NOT condition, you need to use $not keyword. Following is the basic syntax of NOT ?
+
+>db.COLLECTION_NAME.find(
+{
+$not: [
+{key1: value1}, {key2:value2}
+]
+}
+)
+
+Example:
+--------
+
+Assume we have inserted 3 documents in the collection empDetails as shown below ?
+
+db.empDetails.insertMany(
+[
+{
+First_Name: "Radhika",
+Last_Name: "Sharma",
+Age: "26",
+e_mail: "radhika_sharma.123@gmail.com",
+phone: "9000012345"
+},
+{
+First_Name: "Rachel",
+Last_Name: "Christopher",
+Age: "27",
+e_mail: "Rachel_Christopher.123@gmail.com",
+phone: "9000054321"
+},
+{
+First_Name: "Fathima",
+Last_Name: "Sheik",
+Age: "24",
+e_mail: "Fathima_Sheik.123@gmail.com",
+phone: "9000054321"
+}
+]
+)
+
+Following example will retrieve the document(s) whose first name is not "Radhika" and last name is not "Christopher"
+
+> db.empDetails.find(
+{
+$nor:[
+40
+{"First_Name": "Radhika"},
+{"Last_Name": "Christopher"}
+]
+}
+).pretty()
+{
+"_id" : ObjectId("5dd631f270fb13eec3963bef"),
+"First_Name" : "Fathima",
+"Last_Name" : "Sheik",
+"Age" : "24",
+"e_mail" : "Fathima_Sheik.123@gmail.com",
+"phone" : "9000054321"
+}
+
+NOT in MongoDB:
+---------------
+
+Syntax:
+-------
+
+To query documents based on the NOT condition, you need to use $not keyword following is the basic syntax of NOT ?
+
+>db.COLLECTION_NAME.find(
+{
+$NOT: [
+{key1: value1}, {key2:value2}
+]
+}
+).pretty()
+
+Example:
+--------
+
+Following example will retrieve the document(s) whose age is not greater than 25
+
+> db.empDetails.find( { "Age": { $not: { $gt: "25" } } } )
+{
+"_id" : ObjectId("5dd6636870fb13eec3963bf7"),
+"First_Name" : "Fathima",
+"Last_Name" : "Sheik",
+"Age" : "24",
+"e_mail" : "Fathima_Sheik.123@gmail.com",
+"phone" : "9000054321"
+}
+
+
+Mangodb Update:
+---------------
+
+MongoDB's update() and save() methods are used to update document into a collection. The update() method updates the values in the existing document while the save() method replaces the existing document with the document passed in save() method.
+
+
+MongoDB Update() Method:
+------------------------
+
+The update() method updates the values in the existing document only, if you try to add extra field or key, it fails.
+
+Syntax:
+-------
+
+The basic syntax of update() method is as follows ?
+
+>db.COLLECTION_NAME.update(SELECTION_CRITERIA, UPDATED_DATA)
+
+Example:
+--------
+
+Consider the mycol collection has the following data.
+
+{ "_id" : ObjectId(5983548781331adf45ec5), "title":"MongoDB Overview"}
+{ "_id" : ObjectId(5983548781331adf45ec6), "title":"NoSQL Overview"}
+{ "_id" : ObjectId(5983548781331adf45ec7), "title":"Tutorials Point Overview"}
+
+Following example will set the new title 'New MongoDB Tutorial' of the documents whose title is 'MongoDB Overview'.
+
+>db.mycol.update({'title':'MongoDB Overview'},{$set:{'title':'New MongoDB Tutorial'}})
+WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+>db.mycol.find()
+{ "_id" : ObjectId(5983548781331adf45ec5), "title":"New MongoDB Tutorial"}
+{ "_id" : ObjectId(5983548781331adf45ec6), "title":"NoSQL Overview"}
+{ "_id" : ObjectId(5983548781331adf45ec7), "title":"Tutorials Point Overview"}
+>
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+*) By default, MongoDB will update only a single document. To update multiple documents, you need to set a parameter 'multi' to true.
+
+>db.mycol.update({'title':'MongoDB Overview'},
+{$set:{'title':'New MongoDB Tutorial'}},{multi:true})
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+
+MongoDB Save() Method:
+----------------------
+
+The save() method replaces the existing document with the new document passed in the save() method, here we can add fileds or keys along with update.
+
+Syntax:
+-------
+
+The basic syntax of MongoDB save() method is shown below ?
+
+>db.COLLECTION_NAME.save({_id:ObjectId(),NEW_DATA})
+
+Example:
+--------
+
+Following example will replace the document with the _id '5983548781331adf45ec5'.
+
+>db.mycol.save(
+{
+"_id" : ObjectId("507f191e810c19729de860ea"),
+"title":"Tutorials Point New Topic",
+"by":"Tutorials Point"
+}
+)
+WriteResult({
+"nMatched" : 0,
+"nUpserted" : 1,
+"nModified" : 0,
+"_id" : ObjectId("507f191e810c19729de860ea")
+})
+>db.mycol.find()
+{ "_id" : ObjectId("507f191e810c19729de860e6"), "title":"Tutorials Point New Topic",
+"by":"Tutorials Point"}
+{ "_id" : ObjectId("507f191e810c19729de860e6"), "title":"NoSQL Overview"}
+{ "_id" : ObjectId("507f191e810c19729de860e6"), "title":"Tutorials Point Overview"}
+>
+
+MongoDB findOneAndUpdate() method:
+----------------------------------
+
+The findOneAndUpdate() method updates the values in the existing document.
+
+Syntax:
+-------
+
+The basic syntax of findOneAndUpdate() method is as follows ?
+
+>db.COLLECTION_NAME.findOneAndUpdate(SELECTIOIN_CRITERIA, UPDATED_DATA)
+
+Example:
+--------
+
+Assume we have created a collection named empDetails and inserted three documents in it as shown below ?
+
+> db.empDetails.insertMany(
+[
+{
+First_Name: "Radhika",
+Last_Name: "Sharma",
+Age: "26",
+e_mail: "radhika_sharma.123@gmail.com",
+phone: "9000012345"
+},
+{
+First_Name: "Rachel",
+Last_Name: "Christopher",
+Age: "27",
+e_mail: "Rachel_Christopher.123@gmail.com",
+phone: "9000054321"
+},
+{
+First_Name: "Fathima",
+Last_Name: "Sheik",
+Age: "24",
+e_mail: "Fathima_Sheik.123@gmail.com",
+phone: "9000054321"
+}
+]
+)
+
+Following example updates the age and email values of the document with name 'Radhika'.
+
+> db.empDetails.findOneAndUpdate(
+{First_Name: 'Radhika'},
+{ $set: { Age: '30',e_mail: 'radhika_newemail@gmail.com'}}
+)
+{
+"_id" : ObjectId("5dd6636870fb13eec3963bf5"),
+"First_Name" : "Radhika",
+"Last_Name" : "Sharma",
+"Age" : "30",
+"e_mail" : "radhika_newemail@gmail.com",
+"phone" : "9000012345"
+}
+
+
+MongoDB updateOne() method:
+---------------------------
+
+This methods updates a single document which matches the given filter.
+
+Syntax:
+-------
+
+The basic syntax of updateOne() method is as follows ?
+
+>db.COLLECTION_NAME.updateOne(, )
+
+Example:
+--------
+
+> db.empDetails.updateOne(
+{First_Name: 'Radhika'},
+{ $set: { Age: '30',e_mail: 'radhika_newemail@gmail.com'}}
+)
+{ "acknowledged" : true, "matchedCount" : 1, "modifiedCount" : 0 }
+>
+
+MongoDB updateMany() method:
+----------------------------
+
+The updateMany() method updates all the documents that matches the given filter.
+
+Syntax:
+-------
+
+The basic syntax of updateMany() method is as follows ?
+
+>db.COLLECTION_NAME.update(, )
+
+Example:
+--------
+
+> db.empDetails.updateMany(
+{Age:{ $gt: "25" }},
+{ $set: { Age: '00'}}
+)
+{ "acknowledged" : true, "matchedCount" : 2, "modifiedCount" : 2 }
+
+You can see the updated values if you retrieve the contents of the document using the find method as shown below ?
+
+> db.empDetails.find()
+{ "_id" : ObjectId("5dd6636870fb13eec3963bf5"), "First_Name" : "Radhika", "Last_Name" : "Sharma", "Age" : "00", "e_mail" : "radhika_newemail@gmail.com", "phone" : "9000012345" }
+{ "_id" : ObjectId("5dd6636870fb13eec3963bf6"), "First_Name" : "Rachel", "Last_Name" : "Christopher", "Age" : "00", "e_mail" : "Rachel_Christopher.123@gmail.com", "phone" : "9000054321" }
+{ "_id" : ObjectId("5dd6636870fb13eec3963bf7"), "First_Name" : "Fathima", "Last_Name" : "Sheik", "Age" : "24", "e_mail" : "Fathima_Sheik.123@gmail.com", "phone" : "9000054321" }
+>
+
+Mangodb remove():
+-----------------
+MongoDB's remove() method is used to remove a document from the collection. remove() method accepts two parameters. One is deletion criteria and second is justOne flag.
+
+-> deletion criteria ? (Optional) deletion criteria according to documents will be removed.
+
+-> justOne ? (Optional) if set to true or 1, then remove only one document.
+
+Syntax:
+-------
+
+Basic syntax of remove() method is as follows ?
+
+>db.COLLECTION_NAME.remove(DELLETION_CRITTERIA)
+
+Example:
+--------
+
+Consider the mycol collection has the following data.
+
+{_id : ObjectId("507f191e810c19729de860e1"), title: "MongoDB Overview"},
+{_id : ObjectId("507f191e810c19729de860e2"), title: "NoSQL Overview"},
+{_id : ObjectId("507f191e810c19729de860e3"), title: "Tutorials Point Overview"}
+
+Following example will remove all the documents whose title is 'MongoDB Overview'.
+
+>db.mycol.remove({'title':'MongoDB Overview'})
+WriteResult({"nRemoved" : 1})
+> db.mycol.find()
+{"_id" : ObjectId("507f191e810c19729de860e2"), "title" : "NoSQL Overview" }
+{"_id" : ObjectId("507f191e810c19729de860e3"), "title" : "Tutorials Point Overview" }
+
+
+Remove Only One:
+----------------
+
+If there are multiple records and you want to delete only the first record, then set justOne parameter in remove() method.
+
+Syntax:
+-------
+>db.COLLECTION_NAME.remove(DELETION_CRITERIA,1)
+
+Remove All Documents:
+---------------------
+
+If you don't specify deletion criteria, then MongoDB will delete whole documents from the collection. This is equivalent of SQL's truncate command.
+
+Example:
+--------
+
+> db.mycol.remove({})
+WriteResult({ "nRemoved" : 2 })
+> db.mycol.find()
+>
+
+Projection:
+-----------
+
+In MongoDB, projection means selecting only the necessary data rather than selecting whole of the data of a document. If a document has 5 fields and you need to show only 3, then select only 3 fields from them.
+
+In MongoDB, when you execute find() method, then it displays all fields of a document. To limit this, you need to set a list of fields with value 1 or 0. 1 is used to show the field while 0 is used to hide the fields.
+
+Syntax:
+-------
+
+The basic syntax of find() method with projection is as follows ?
+
+>db.COLLECTION_NAME.find({},{KEY:1})
+
+Example:
+--------
+
+Consider the collection mycol has the following data ?
+
+{_id : ObjectId("507f191e810c19729de860e1"), title: "MongoDB Overview"},
+{_id : ObjectId("507f191e810c19729de860e2"), title: "NoSQL Overview"},
+{_id : ObjectId("507f191e810c19729de860e3"), title: "Tutorials Point Overview"}
+
+Following example will display the title of the document while querying the document.
+
+>db.mycol.find({},{"title":1,_id:0})
+{"title":"MongoDB Overview"}
+{"title":"NoSQL Overview"}
+{"title":"Tutorials Point Overview"}
+>
+
+Please note _id field is always displayed while executing find() method, if you don't want this field, then you need to set it as 0.
+
+
+Mangodb Limit():
+----------------
+
+To limit the records in MongoDB, you need to use limit() method. The method accepts one number type argument, which is the number of documents that you want to be displayed.
+
+Syntax:
+-------
+
+The basic syntax of limit() method is as follows ?
+
+>db.COLLECTION_NAME.find().limit(NUMBER)
+
+
+Example:
+--------
+
+Consider the collection myycol has the following data.
+
+{_id : ObjectId("507f191e810c19729de860e1"), title: "MongoDB Overview"},
+{_id : ObjectId("507f191e810c19729de860e2"), title: "NoSQL Overview"},
+{_id : ObjectId("507f191e810c19729de860e3"), title: "Tutorials Point Overview"}
+
+Following example will display only two documents while querying the document.
+
+>db.mycol.find({},{"title":1,_id:0}).limit(2)
+{"title":"MongoDB Overview"}
+{"title":"NoSQL Overview"}
+>
+
+If you don't specify the number argument in limit() method then it will display all documents from the collection.
+
+MongoDB Skip() Method:
+----------------------
+
+Apart from limit() method, there is one more method skip() which also accepts number type argument and is used to skip the number of documents.
+
+Syntax:
+-------
+
+The basic syntax of skip() method is as follows ?
+
+>db.COLLECTION_NAME.find().limit(NUMBER).skip(NUMBER)
+
+Example:
+--------
+
+Following example will display only the second document.
+
+>db.mycol.find({},{"title":1,_id:0}).limit(1).skip(1)
+{"title":"NoSQL Overview"}
+>
+
+Please note, the default value in skip() method is 0.
+
+Mangodb Sort():
+---------------
+
+To sort documents in MongoDB, you need to use sort() method. The method accepts a document containing a list of fields along with their sorting order. To specify sorting order 1 and -1 are used. 1 is used for ascending order while -1 is used for descending order.
+
+Syntax:
+-------
+
+The basic syntax of sort() method is as follows ?
+
+>db.COLLECTION_NAME.find().sort({KEY:1})
+
+Example:
+--------
+
+Consider the collection myycol has the following data.
+
+{_id : ObjectId("507f191e810c19729de860e1"), title: "MongoDB Overview"}
+{_id : ObjectId("507f191e810c19729de860e2"), title: "NoSQL Overview"}
+{_id : ObjectId("507f191e810c19729de860e3"), title: "Tutorials Point Overview"}
+
+Following example will display the documents sorted by title in the descending order.
+
+>db.mycol.find({},{"title":1,_id:0}).sort({"title":-1})
+{"title":"Tutorials Point Overview"}
+{"title":"NoSQL Overview"}
+{"title":"MongoDB Overview"}
+>
+
+Please note, if you don't specify the sorting preference, then sort() method will display the documents in ascending order.
+
+
+Mangodb Indexes:
+
+Refer this link => "https://www.tutorialspoint.com/mongodb/mongodb_indexing.htm".
+
+
+Aggregations:
+-------------
+
+Aggregations operations process data records and return computed results. Aggregation operations group values from multiple documents together, and can perform a variety of operations on the grouped data to return a single result. In SQL count(*) and with group by is an equivalent of MongoDB aggregation.
+
+Syntax:
+-------
+
+Basic syntax of aggregate() method is as follows ?
+
+>db.COLLECTION_NAME.aggregate(AGGREGATE_OPERATION)
+
+Example:
+--------
+
+In the collection you have the following data ?
+
+{
+_id: ObjectId(7df78ad8902c)
+title: 'MongoDB Overview',
+description: 'MongoDB is no sql database',
+by_user: 'tutorials point',
+url: 'http://www.tutorialspoint.com',
+tags: ['mongodb', 'database', 'NoSQL'],
+likes: 100
+},
+{
+_id: ObjectId(7df78ad8902d)
+title: 'NoSQL Overview',
+description: 'No sql database is very fast',
+by_user: 'tutorials point',
+url: 'http://www.tutorialspoint.com',
+tags: ['mongodb', 'database', 'NoSQL'],
+likes: 10
+},
+{
+_id: ObjectId(7df78ad8902e)
+title: 'Neo4j Overview',
+description: 'Neo4j is no sql database',
+by_user: 'Neo4j',
+url: 'http://www.neo4j.com',
+tags: ['neo4j', 'database', 'NoSQL'],
+likes: 750
+},
+
+Now from the above collection, if you want to display a list stating how many tutorials are written by each user, then you will use the following aggregate() method ?
+
+> db.mycol.aggregate([{$group : {_id : "$by_user", num_tutorial : {$sum : 1}}}])
+{ "_id" : "tutorials point", "num_tutorial" : 2 }
+{ "_id" : "Neo4j", "num_tutorial" : 1 }
+>
+
+Sql equivalent query for the above use case will be select by_user, count(*) from mycol group by by_user.
+
+In the above example, we have grouped documents by field by_user and on each occurrence of by user previous value of sum is incremented. Following is a list of available aggregation expressions.
+
+Expression Description Example
+
+$sum Sums up the defined value from all documents in the collection. db.mycol.aggregate([{$group : {_id : "$by_user",
+num_tutorial : {$sum : "$likes"}}}])
+
+$avg Calculates the average of all given values from all documents in db.mycol.aggregate([{$group : {_id : "$by_user",
+the collection. num_tutorial : {$avg : "$likes"}}}])
+
+$min Gets the minimum of the corresponding values from all documents in db.mycol.aggregate([{$group : {_id : "$by_user",
+the collection. num_tutorial : {$min : "$likes"}}}])
+
+$max Gets the maximum of the corresponding values from all documents in db.mycol.aggregate([{$group : {_id : "$by_user",
+the collection. num_tutorial : {$max : "$likes"}}}])
+
+$push Inserts the value to an array in the resulting document. db.mycol.aggregate([{$group : {_id : "$by_user",
+url : {$push: "$url"}}}])
+
+$addToSet Inserts the value to an array in the resulting document but does db.mycol.aggregate([{$group : {_id : "$by_user",
+not create duplicates. url : {$addToSet : "$url"}}}])
+
+$first Gets the first document from the source documents according db.mycol.aggregate([{$group : {_id : "$by_user",
+to the grouping. Typically this makes only sense together with first_url : {$first : "$url"}}}])
+some previously applied ?$sort?-stage.
+
+$last Gets the last document from the source documents according to db.mycol.aggregate([{$group : {_id : "$by_user",
+the grouping. Typically this makes only sense together with some last_url : {$last : "$url"}}}])
+previously applied ?$sort?-stage.
+
+
+Pipeline Concept:
+-----------------
+
+In UNIX command, shell pipeline means the possibility to execute an operation on some input and use the output as the input for the next command and so on. MongoDB also supports same concept in aggregation framework. There is a set of possible stages and each of those is taken as a set of documents as an input and produces a resulting set of documents (or the final resulting JSON document at the end of the pipeline). This can then in turn be used for the next stage and so on.
+
+Following are the possible stages in aggregation framework ?
+
+$project ? Used to select some specific fields from a collection.
+
+$match ? This is a filtering operation and thus this can reduce the amount of documents that are given as input to the next stage.
+
+$group ? This does the actual aggregation as discussed above.
+
+$sort ? Sorts the documents.
+
+$skip ? With this, it is possible to skip forward in the list of documents for a given amount of documents.
+
+$limit ? This limits the amount of documents to look at, by the given number starting from the current positions.
+
+$unwind ? This is used to unwind document that are using arrays. When using an array, the data is kind of pre-joined and this operation will be undone with this to have individual documents again. Thus with this stage we will increase the amount of documents for the next stage.
+
+
+Backup Mangodb Data:
+--------------------
+
+Dump MongoDB Data:
+------------------
+
+To create backup of database in MongoDB, you should use mongodump command. This command will dump the entire data of your server into the dump directory. There are many options available by which you can limit the amount of data or create backup of your remote server.
+
+Syntax:
+-------
+
+The basic syntax of mongodump command is as follows ?
+
+>mongodump
+
+Lot of option available on it, for that refer below link.
+
+Refer for full details "https://www.tutorialspoint.com/mongodb/mongodb_create_backup.htm"
+
+Restore MongoDB data:
+---------------------
+
+To restore backup data MongoDB's mongorestore command is used. This command restores all of the data from the backup directory.
+
+Syntax:
+-------
+
+The basic syntax of mongorestore command is ?
+
+>mongorestore
+
+Relationhips:
+-------------
+
+Relationships in MongoDB represent how various documents are logically related to each other. Relationships can be modeled via Embedded and Referenced approaches.
+
+
+Modeling Embedded Relationships:
+--------------------------------
+
+In the embedded approach, we will embed the address document inside the user document.
+
+> db.users.insert({
+{
+"_id":ObjectId("52ffc33cd85242f436000001"),
+"contact": "987654321",
+"dob": "01-01-1991",
+"name": "Tom Benzamin",
+"address": [
+{
+"building": "22 A, Indiana Apt",
+"pincode": 123456,
+"city": "Los Angeles",
+"state": "California"
+},
+{
+"building": "170 A, Acropolis Apt",
+"pincode": 456789,
+"city": "Chicago",
+"state": "Illinois"
+}
+]
+}
+})
+
+This approach maintains all the related data in a single document, which makes it easy to retrieve and maintain. The whole document can be retrieved in a single query such as ?
+
+>db.users.findOne({"name":"Tom Benzamin"},{"address":1})
+
+Note that in the above query, db and users are the database and collection respectively.
+
+The drawback is that if the embedded dcument keeps on growing too much in size, it can impact the read/write performance.
+
+Modeling Referenced Relationships:
+----------------------------------
+
+This is the approach of designing normalized relationship. In this approach, both the user and address documents will be maintained separately but the user document will contain a field that will reference the address document's id field.
+
+{
+"_id":ObjectId("52ffc33cd85242f436000001"),
+"contact": "987654321",
+"dob": "01-01-1991",
+"name": "Tom Benzamin",
+"address_ids": [
+ObjectId("52ffc4a5d85242602e000000"),
+ObjectId("52ffc4a5d85242602e000001")
+]
+}
+
+As shown above, the user document contains the array field address_ids which contains ObjectIds of corresponding addresses. Using these ObjectIds, we can query the address documents and get address details from there. With this approach, we will need two queries: first to fetch the address_ids fields from user document and second to fetch these addresses from address collection.
+
+>var result = db.users.findOne({"name":"Tom Benzamin"},{"address_ids":1})
+>var addresses = db.address.find({"_id":{"$in":result["address_ids"]}})
+
+
+Covered Query:
+--------------
+
+As per the official MongoDB documentation, a covered query is a query in which ?
+
+All the fields in the query are part of an index.
+All the fields returned in the query are in the same index.
+
+Since all the fields present in the query are part of an index, MongoDB matches the query conditions and returns the result using the same index without actually looking inside the documents. Since indexes are present in RAM, fetching data from indexes is much faster as compared to fetching data by scanning documents.
+
+Using Covered Queries:
+----------------------
+
+To test covered queries, consider the following document in the users collection ?
+
+{
+"_id": ObjectId("53402597d852426020000003"),
+"contact": "987654321",
+"dob": "01-01-1991",
+"gender": "M",
+"name": "Tom Benzamin",
+"user_name": "tombenzamin"
+}
+
+We will first create a compound index for the users collection on the fields gender and user_name using the following query ?
+
+>db.users.createIndex({gender:1,user_name:1})
+{
+"createdCollectionAutomatically" : false,
+"numIndexesBefore" : 1,
+"numIndexesAfter" : 2,
+"ok" : 1
+}
+
+Now, this index will cover the following query ?
+
+>db.users.find({gender:"M"},{user_name:1,_id:0})
+{ "user_name" : "tombenzamin" }
+
+That is to say that for the above query, MongoDB would not go looking into database documents. Instead it would fetch the required data from indexed data which is very fast.
+
+Since our index does not include _id field, we have explicitly excluded it from result set of our query, as MongoDB by default returns _id field in every query. So the following query would not have been covered inside the index created above ?
+
+>db.users.find({gender:"M"},{user_name:1})
+{ "_id" : ObjectId("53402597d852426020000003"), "user_name" : "tombenzamin" }
+
+Lastly, remember that an index cannot cover a query if ?
+
+-> Any of the indexed fields is an array
+-> Any of the indexed fields is a subdocument
+
+
+Analyzing queries:
+------------------
+
+Analyzing queries is a very important aspect of measuring how effective the database and indexing design is. We will learn about the frequently used $explain and $hint queries.
+
+Example:
+--------
+>db.users.find({gender:"M"},{user_name:1,_id:0}).explain()
+
+It gives the full detail of the query.
+
+Atomic Operations:
+------------------
+
+It is nothing but, select query and insert into it. For example,
+
+Example:
+--------
+>db.products.findAndModify({
+query:{_id:2,product_available:{$gt:0}},
+update:{
+$inc:{product_available:-1},
+$push:{product_bought_by:{customer:"rob",date:"9-Jan-2014"}}
+}
+})
+
+Indexing Limitations:
+---------------------
+
+In this chapter, we will learn about Indexing Limitations and its other components.
+
+Extra Overhead:
+---------------
+
+Every index occupies some space as well as causes an overhead on each insert, update and delete. So if you rarely use your collection for read operations, it makes sense not to use indexes.
+
+RAM Usage:
+----------
+
+Since indexes are stored in RAM, you should make sure that the total size of the index does not exceed the RAM limit. If the total size increases the RAM size, it will start deleting some indexes, causing performance loss.
+
+Query Limitations:
+------------------
+
+Indexing can't be used in queries which use ?
+
+Regular expressions or negation operators like $nin, $not, etc.
+Arithmetic operators like $mod, etc.
+$where clause
+
+Hence, it is always advisable to check the index usage for your queries.
+
+Index Key Limits:
+-----------------
+
+Starting from version 2.6, MongoDB will not create an index if the value of existing index field exceeds the index key limit.
+
+Inserting Documents Exceeding Index Key Limit:
+----------------------------------------------
+
+MongoDB will not insert any document into an indexed collection if the indexed field value of this document exceeds the index key limit. Same is the case with mongorestore and mongoimport utilities.
+
+Maximum Ranges:
+---------------
+
+A collection cannot have more than 64 indexes.
+The length of the index name cannot be longer than 125 characters.
+A compound index can have maximum 31 fields indexed.
+
+
+
+Map-reduce:
+------------
+
+As per the MongoDB documentation, Map-reduce is a data processing paradigm for condensing large volumes of data into useful aggregated results. MongoDB uses mapReduce command for map-reduce operations. MapReduce is generally used for processing large data sets.
+
+Read any other documentation for this.
+
+Replication:
+------------
+
+Replication is the process of synchronizing data across multiple servers. Replication provides redundancy and increases data availability with multiple copies of data on different database servers. Replication protects a database from the loss of a single server. Replication also allows you to recover from hardware failure and service interruptions. With additional copies of the data, you can dedicate one to disaster recovery, reporting, or backup.
+
+Why Replication?
+
+-> To keep your data safe
+-> High (24*7) availability of data
+-> Disaster recovery
+-> No downtime for maintenance (like backups, index rebuilds, compaction)
+-> Read scaling (extra copies to read from)
+-> Replica set is transparent to the application
+
+For full detail refer => "https://www.tutorialspoint.com/mongodb/mongodb_replication.htm".
+
+
+Sharding:
+---------
+
+Sharding is the process of storing data records across multiple machines and it is MongoDB's approach to meeting the demands of data growth. As the size of the data increases, a single machine may not be sufficient to store the data nor provide an acceptable read and write throughput. Sharding solves the problem with horizontal scaling. With sharding, you add more machines to support data growth and the demands of read and write operations.
+
+Why Sharding?
+
+-> In replication, all writes go to master node
+
+-> Latency sensitive queries still go to master
+
+-> Single replica set has limitation of 12 nodes
+
+-> Memory can't be large enough when active dataset is big
+
+-> Local disk is not big enough
+
+-> Vertical scaling is too expensive 
+
+
+Mongodb Commands:
+-----------------
+
+Reference Link: https://docs.mongodb.com/manual/reference/mongo-shell/
+-----------------------------------------------------------------------
+
+Help Methods and Commands        Description
+
+help                            Show help.
+db.help()                        Show help for database methods.
+db.<collection>.help()            Show help on collection methods. The <collection> can be the name of an existing collection or a
+                                non-existing collection.
+show dbs                        Print a list of all databases on the server.
+use <db>                        Switch current database to <db>. The mongo shell variable db is set to the current database.
+show collections                Print a list of all collections for current database.
+show users                        Print a list of users for current database.
+show roles                        Print a list of all roles, both user-defined and built-in, for the current database.
+show profile                    Print the five most recent operations that took 1 millisecond or more. See documentation on the database
+                                profiler for more information.
+show databases                    Print a list of all available datab
+
+
+Queries:
+--------
+
+Reference Link:
+---------------
+https://docs.mongodb.com/manual/tutorial/query-documents/
+
+Insert Query:
+-------------
+
+In which below "inventory" is collection name.
+
+Example:
+--------
+db.inventory.insertMany([
+   { item: "journal", qty: 25, size: { h: 14, w: 21, uom: "cm" }, status: "A" },
+   { item: "notebook", qty: 50, size: { h: 8.5, w: 11, uom: "in" }, status: "A" },
+   { item: "paper", qty: 100, size: { h: 8.5, w: 11, uom: "in" }, status: "D" },
+   { item: "planner", qty: 75, size: { h: 22.85, w: 30, uom: "cm" }, status: "D" },
+   { item: "postcard", qty: 45, size: { h: 10, w: 15.25, uom: "cm" }, status: "A" }
+]);
+
+Select All Documents in a Collection:
+--------------------------------------
+*) To select all documents in the collection, pass an empty document as the query filter parameter to the find method. The query filter parameter determines the select criteria:
+
+Example:
+--------
+db.inventory.find()			//It is equal to ==> "SELECT * FROM inventory"
+
+Specify Equality Condition in query:
+------------------------------------
+*) To specify equality conditions, use <field>:<value> expressions in the query filter document:
+
+Syntax:
+-------
+{ <field1>: <value1>, ... }
+
+Example:
+--------
+db.inventory.find( { status: "D" } )	//It is equal to ===> "SELECT * FROM inventory WHERE status = "D""
+
+Specify Conditions Using Query Operators:
+-----------------------------------------
+*) A query filter document can use the query operators to specify conditions in the following form:
+
+Syntax:
+-------
+{ <field1>: { <operator1>: <value1> }, ... }
+
+Example:
+--------
+db.inventory.find( { status: { $in: [ "A", "D" ] } } )	//It is equal to ===> "SELECT * FROM inventory WHERE status in ("A", "D")"
+
+The following example retrieves all documents from the inventory collection where status equals either "A" or "D":
+
+Specify AND Conditions:
+-----------------------
+A compound query can specify conditions for more than one field in the collection's documents. Implicitly, a logical AND conjunction connects the clauses of a compound query so that the query selects the documents in the collection that match all the conditions.
+
+The following example retrieves all documents in the inventory collection where the status equals "A" and qty is less than ($lt) 30:
+
+Example:
+--------
+db.inventory.find( { status: "A", qty: { $lt: 30 } } )	//It is equal to ===> "SELECT * FROM inventory WHERE status = "A" AND qty < 30"
+
+Specify OR Conditions:
+----------------------
+Using the $or operator, you can specify a compound query that joins each clause with a logical OR conjunction so that the query selects the documents in the collection that match at least one condition.
+
+The following example retrieves all documents in the collection where the status equals "A" or qty is less than ($lt) 30:
+
+Example:
+--------
+db.inventory.find( { $or: [ { status: "A" }, { qty: { $lt: 30 } } ] } )		//It is equal to ====> "SELECT * FROM inventory WHERE status = "A" OR qty < 30"
+
+Specify AND as well as OR Conditions:
+-------------------------------------
+In the following example, the compound query document selects all documents in the collection where the status equals "A" and either qty is less than ($lt) 30 or item starts with the character p
+
+Example:
+--------
+db.inventory.find( {
+     status: "A",
+     $or: [ { qty: { $lt: 30 } }, { item: /^p/ } ]
+} )		//It is equal to ===> "SELECT * FROM inventory WHERE status = "A" AND ( qty < 30 OR item LIKE "p%")"
+
+Distinction:
+------------
+Syntax:
+-------
+db.collection.distinct()
+
+Below collection data:
+{ "_id": 1, "dept": "A", "item": { "sku": "111", "color": "red" }, "sizes": [ "S", "M" ] }
+{ "_id": 2, "dept": "A", "item": { "sku": "111", "color": "blue" }, "sizes": [ "M", "L" ] }
+{ "_id": 3, "dept": "B", "item": { "sku": "222", "color": "blue" }, "sizes": "S" }
+{ "_id": 4, "dept": "A", "item": { "sku": "333", "color": "black" }, "sizes": [ "S" ] }
+
+Example:
+--------
+db.inventory.distinct( "dept" )	// It returns [ "A", "B" ]
+
+Multiple Delete:
+----------------
+Syntax:
+-------
+db.collection.deleteMany()
+
+Example: 
+--------
+try {
+   db.orders.deleteMany( { "client" : "Crude Traders Inc." } );
+} catch (e) {
+   print (e);
+}
+
+It returns:
+-----------
+{ "acknowledged" : true, "deletedCount" : 10 }
+
+Drop Collection:
+----------------
+Syntax:
+-------
+db.collection.drop(<options>)
+
+Example:
+--------
+db.students.drop()
+
+
+Count():
+--------
+Syntax:
+-------
+db.collection.count(query, options)
+
+Example:
+--------
+db.collection.find( { a: 5, b: { $gt: 10 } } ).count()
+
+
+Match an Embedded/Nested Document:
+----------------------------------
+To specify an equality condition on a field that is an embedded/nested document, use the query filter document { <field>: <value> } where <value> is the document to match.
+
+Insert:
+-------
+db.inventory.insertMany( [
+   { item: "journal", qty: 25, size: { h: 14, w: 21, uom: "cm" }, status: "A" },
+   { item: "notebook", qty: 50, size: { h: 8.5, w: 11, uom: "in" }, status: "A" },
+   { item: "paper", qty: 100, size: { h: 8.5, w: 11, uom: "in" }, status: "D" },
+   { item: "planner", qty: 75, size: { h: 22.85, w: 30, uom: "cm" }, status: "D" },
+   { item: "postcard", qty: 45, size: { h: 10, w: 15.25, uom: "cm" }, status: "A" }
+]);
+
+For example, the following query selects all documents where the field size equals the document { h: 14, w: 21, uom: "cm" }:
+
+Example:
+--------
+db.inventory.find( { size: { h: 14, w: 21, uom: "cm" } } )
+
+Specify Equality Match on a Nested Field:
+-----------------------------------------
+The following example selects all documents where the field uom nested in the size field equals "in":
+
+Example:
+--------
+db.inventory.find( { "size.uom": "in" } )
+
+Specify Match using Query Operator:
+-----------------------------------
+A query filter document can use the query operators to specify conditions in the following form:
+
+Syntax:
+-------
+{ <field1>: { <operator1>: <value1> }, ... }
+
+The following query uses the less than operator ($lt) on the field h embedded in the size field:
+
+Example:
+--------
+db.inventory.find( { "size.h": { $lt: 15 } } )
+
+Specify AND Condition:
+----------------------
+The following query selects all documents where the nested field h is less than 15, the nested field uom equals "in", and the status field equals "D":
+
+Example:
+--------
+db.inventory.find( { "size.h": { $lt: 15 }, "size.uom": "in", status: "D" } )
+
+Query an Array:
+---------------
+This page provides examples of query operations on array fields using the db.collection.find() method in mongosh. The examples on this page use the inventory collection. To populate the inventory collection, run the following:
+
+Insert Query:
+-------------
+db.inventory.insertMany([
+   { item: "journal", qty: 25, tags: ["blank", "red"], dim_cm: [ 14, 21 ] },
+   { item: "notebook", qty: 50, tags: ["red", "blank"], dim_cm: [ 14, 21 ] },
+   { item: "paper", qty: 100, tags: ["red", "blank", "plain"], dim_cm: [ 14, 21 ] },
+   { item: "planner", qty: 75, tags: ["blank", "red"], dim_cm: [ 22.85, 30 ] },
+   { item: "postcard", qty: 45, tags: ["blue"], dim_cm: [ 10, 15.25 ] }
+]);
+
+Match an Array:
+---------------
+To specify equality condition on an array, use the query document { <field>: <value> } where <value> is the exact array to match, including the order of the elements.
+
+The following example queries for all documents where the field tags value is an array with exactly two elements, "red" and "blank", in the specified order:
+
+Example:
+--------
+db.inventory.find( { tags: ["red", "blank"] } )
+
+If, instead, you wish to find an array that contains both the elements "red" and "blank", without regard to order or other elements in the array, use the $all operator:
+
+Example:
+--------
+db.inventory.find( { tags: { $all: ["red", "blank"] } } )
+
+Query an Array for an Element:
+------------------------------
+To query if the array field contains at least one element with the specified value, use the filter { <field>: <value> } where <value> is the element value.
+
+The following example queries for all documents where tags is an array that contains the string "red" as one of its elements:
+
+Example:
+--------
+db.inventory.find( { tags: "red" } )
+
+To specify conditions on the elements in the array field, use query operators in the query filter document:
+
+Syntax:
+-------
+{ <array field>: { <operator1>: <value1>, ... } }
+
+For example, the following operation queries for all documents where the array dim_cm contains at least one element whose value is greater than 25.
+
+Example:
+--------
+db.inventory.find( { dim_cm: { $gt: 25 } } )
+
+Specify Multiple Conditions for Array Elements:
+------------------------------------------------
+When specifying compound conditions on array elements, you can specify the query such that either a single array element meets these condition or any combination of array elements meets the conditions.
+
+Query an Array with Compound Filter Conditions on the Array Elements:
+---------------------------------------------------------------------
+The following example queries for documents where the dim_cm array contains elements that in some combination satisfy the query conditions; e.g., one element can satisfy the greater than 15 condition and another element can satisfy the less than 20 condition, or a single element can satisfy both:
+
+Example:
+--------
+db.inventory.find( { dim_cm: { $gt: 15, $lt: 20 } } )
+
+Query for an Array Element that Meets Multiple Criteria:
+--------------------------------------------------------
+Use $elemMatch operator to specify multiple criteria on the elements of an array such that at least one array element satisfies all the specified criteria.
+
+The following example queries for documents where the dim_cm array contains at least one element that is both greater than ($gt) 22 and less than ($lt) 30:
+
+Example:
+--------
+db.inventory.find( { dim_cm: { $elemMatch: { $gt: 22, $lt: 30 } } } )
+
+Query for an Element by the Array Index Position:
+-------------------------------------------------
+Using dot notation, you can specify query conditions for an element at a particular index or position of the array. The array uses zero-based indexing.
+
+The following example queries for all documents where the second element in the array dim_cm is greater than 25:
+
+Example:
+--------
+db.inventory.find( { "dim_cm.1": { $gt: 25 } } )
+
+Query an Array by Array Length:
+-------------------------------
+Use the $size operator to query for arrays by number of elements. For example, the following selects documents where the array tags has 3 elements.
+
+Example:
+--------
+db.inventory.find( { "tags": { $size: 3 } } )
+
+Query an Array of Embedded Documents:
+-------------------------------------
+This page provides examples of query operations on an array of nested documents using the db.collection.find() method in mongosh. The examples on this page use the inventory collection. To populate the inventory collection, run the following:
+
+Insert Query:
+-------------
+db.inventory.insertMany( [
+   { item: "journal", instock: [ { warehouse: "A", qty: 5 }, { warehouse: "C", qty: 15 } ] },
+   { item: "notebook", instock: [ { warehouse: "C", qty: 5 } ] },
+   { item: "paper", instock: [ { warehouse: "A", qty: 60 }, { warehouse: "B", qty: 15 } ] },
+   { item: "planner", instock: [ { warehouse: "A", qty: 40 }, { warehouse: "B", qty: 5 } ] },
+   { item: "postcard", instock: [ { warehouse: "B", qty: 15 }, { warehouse: "C", qty: 35 } ] }
+]);
+
+Query for a Document Nested in an Array:
+----------------------------------------
+The following example selects all documents where an element in the instock array matches the specified document:
+
+Example:
+--------
+db.inventory.find( { "instock": { warehouse: "A", qty: 5 } } )
+
+Equality matches on the whole embedded/nested document require an exact match of the specified document, including the field order. For example, the following query does not match any documents in the inventory collection:
+
+Example:
+--------
+db.inventory.find( { "instock": { qty: 5, warehouse: "A" } } )
+
+Specify a Query Condition on a Field in an Array of Documents:
+---------------------------------------------------------------
+
+Specify a Query Condition on a Field Embedded in an Array of Documents:
+-----------------------------------------------------------------------
+If you do not know the index position of the document nested in the array, concatenate the name of the array field, with a dot (.) and the name of the field in the nested document.
+
+The following example selects all documents where the instock array has at least one embedded document that contains the field qty whose value is less than or equal to 20:
+
+Example:
+--------
+db.inventory.find( { 'instock.qty': { $lte: 20 } } )
+
+Use the Array Index to Query for a Field in the Embedded Document:
+------------------------------------------------------------------
+Using dot notation, you can specify query conditions for field in a document at a particular index or position of the array. The array uses zero-based indexing.
+
+The following example selects all documents where the instock array has as its first element a document that contains the field qty whose value is less than or equal to 20:
+
+Example:
+--------
+db.inventory.find( { 'instock.0.qty': { $lte: 20 } } )
+
+Specify Multiple Conditions for Array of Documents:
+---------------------------------------------------
+When specifying conditions on more than one field nested in an array of documents, you can specify the query such that either a single document meets these condition or any combination of documents (including a single document) in the array meets the conditions.
+
+A Single Nested Document Meets Multiple Query Conditions on Nested Fields:
+--------------------------------------------------------------------------
+Use $elemMatch operator to specify multiple criteria on an array of embedded documents such that at least one embedded document satisfies all the specified criteria.
+
+The following example queries for documents where the instock array has at least one embedded document that contains both the field qty equal to 5 and the field warehouse equal to A:
+
+Example:
+--------
+db.inventory.find( { "instock": { $elemMatch: { qty: 5, warehouse: "A" } } } )
+
+The following example queries for documents where the instock array has at least one embedded document that contains the field qty that is greater than 10 and less than or equal to 20:
+
+Example:
+--------
+db.inventory.find( { "instock": { $elemMatch: { qty: { $gt: 10, $lte: 20 } } } } )
+
+Combination of Elements Satisfies the Criteria:
+-----------------------------------------------
+If the compound query conditions on an array field do not use the $elemMatch operator, the query selects those documents whose array contains any combination of elements that satisfies the conditions.
+
+For example, the following query matches documents where any document nested in the instock array has the qty field greater than 10 and any document (but not necessarily the same embedded document) in the array has the qty field less than or equal to 20:
+
+Example:
+--------
+db.inventory.find( { "instock.qty": { $gt: 10,  $lte: 20 } } )
+
+The following example queries for documents where the instock array has at least one embedded document that contains the field qty equal to 5 and at least one embedded document (but not necessarily the same embedded document) that contains the field warehouse equal to A:
+
+Example:
+--------
+db.inventory.find( { "instock.qty": 5, "instock.warehouse": "A" } )
+
+
+How to Handle Advanced Data Processing with MongoDB's Aggregation Framework:
+----------------------------------------------------------------------------
+Reference Link: https://www.freecodecamp.org/news/mongodb-aggregation-framework/
+
+*) MongoDB has come a long way. Even though there are many NoSQL databases out there, MongoDB is the first database that comes to mind when talking about NoSQL databases. 
+*) Although there always has been a bit of heat between people who like SQL and people who prefer NoSQL, the truth is, databases like MongoDB solve a different problem. 
+*) And they can be really handy when handing unstructured data where manipulating the shape of data quickly and efficiently (and turning it into relevant knowledge) is more helpful than the rock-solid performance provided by old school SQL databases.
+*) MongoDB comes with a powerful framework for doing this – that is, manipulating data right onto the server: the Aggregation Framework. Let's get into it and cover some quick points about it, what it is, and why it is important.
+
+What is the Aggregation Framework?
+-----------------------------------
+*) The Aggregation framework is just a way to query documents in a collection in MongoDB. This framework exists because when you start working with and manipulating data, you often need to crunch collections together, modify them, pluck out fields, rename fields, concat them together, group documents by field, explode array of fields in different documents and so on. 
+*) This cannot be done by the traditional querying system which MongoDB comes with (that is, the find query or update query, or any other query you might have used).
+*) The simple query set in MongoDB only allows you to retrieve full or parts of individual documents. They don't really allow you to manipulate the documents on the server and then return them to your application. 
+
+Pipeline:
+---------
+The Aggregation framework relies on the pipeline concept. Let's see an image which explains it in a better way:
+Here, as you can see, we pick up a collection and pass it through a pipeline. This pipeline consists of certain stages where certain operators modify the documents in the collection using various techniques. Finally, the output is returned to the application calling the query.
+
+Pipeline operators:
+-------------------
+In MongoDB, the pipeline is an array consisting of various operators, which take in a bunch of documents and spit out modified documents according to the rules specified by the programmer. The next operator takes in the documents spat out by the previous operator, hence, it's called a pipeline. 
+You can have many operators in a pipeline, and these operators can be repeated as well, unlike regular MongoDB queries.
+
+Pipeline Sequence Optimization:
+-------------------------------
+($project or $unset or $addFields or $set) + $match Sequence Optimization
+
+Let's take a look at some common pipeline operators in MongoDB:
+---------------------------------------------------------------
+    $project − Used to select some specific fields from a collection.
+
+    $match − This is a filtering operation and thus this can reduce the amount of documents that are given as input to the next stage.
+
+    $group − This does the actual aggregation as discussed above.
+
+    $sort − Sorts the documents.
+
+    $skip − With this, it is possible to skip forward in the list of documents for a given amount of documents.
+
+    $limit − This limits the amount of documents to look at, by the given number starting from the current positions.
+
+    $unwind − This is used to unwind document that are using arrays. When using an array, the data is kind of pre-joined and this operation will be undone with this to have individual documents again. Thus with this stage we will increase the amount of documents for the next stage.

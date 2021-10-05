@@ -1,0 +1,345 @@
+Nodejs:
+-------
+
+For create setup,
+*) Run "npm init"
+*) Fill the values
+
+If you change anything in root files like index.js or app.js, then restart server.
+
+*) First download and install nodejs LTS version.
+*) And then install express.js(using npm) on your folder which you want to make backend, then "node_modules" folder will created with "package-lock.json" file.
+	Reference link for expressjs  => "https://expressjs.com"
+*) Make route settup using express.js.
+*) Final run the command "npm init", it asks meta details of your project, so fill it and mention the root file.
+*) Then run the command "node index.js(root file, mentioned above)".
+*) Now localhost is available on your brower.
+*) Once you make any changes on root file then restart "node index.js(root file)".
+
+
+Basic Steps:
+------------
+	Here the steps to create basic setup files. Before goes, first install nodejs and make global by adding in environmental variable.
+
+i)	 Create one separate folder for project.
+ii)	 Inside that folder create "index.js" or "app.js" file.
+iii) Now you can run this file via command prompt	=>	"node index.js" or "node app.js".
+iv)	 On the same folder install "express" package using this command => "npm i express"
+v)	 Here after follow the instruction on express sites, and make rotes.
+vi)	 Reference Link => "https://expressjs.com/en/starter/hello-world.html"
+vii) Then run command "npm init" and see at the top for more details.
+
+Example :
+---------
+var express = require('express');
+var app = express();
+const port = 3000;
+
+app.get('/', function(req, res) {
+	res.send('hello world');
+});
+
+app.listen(port, () => {
+	console.log('Listening port 3000');
+})
+
+Reference Project => "https://github.com/gothinkster/node-express-realworld-example-app/blob/master/app.js"
+
+*) var path = require('path');	=> It is usefull for mention paths of you want to mention.
+Example:	app.set('views', path.join(__dirname, 'views'));
+--------
+Reference Link => https://nodejs.org/docs/latest/api/path.html
+
+*) var cors = require('cors');	=> It is used to solve cors issue
+Example:	app.use(cors());
+
+var bodyParser = require('body-parser')
+var multer = require('multer')
+
+But there are a few caveats. Basically, there are a bunch of different ways to format the data you POST to the server:
+It returns a function that acts as middleware. The function listens for req.on(‘data’) and constructs req.body from the chunks of data it gets.
+    application/x-www-form-urlencoded
+    multipart/form-data
+    application/json
+    application/xml
+    maybe some others
+
+Example:
+--------
+app.use(bodyParser.json()); // for parsing application/json
+app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
+app.use(multer()); // for parsing multipart/form-data
+--------
+
+*) var bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({ extended: true }));	//The extended option allows to choose between parsing the URL-encoded data with the querystring library (when false) or the qs library (when true).
+
+  <input type="text" class="form-control" placeholder='Text' name="comment[text]" value="<%=comment.text%>">
+  those two line will help you produce a object directly without the hassle to set variables and create your own object.if you set extended property to false it will not produce the object and will return undefined.try it for yourself you will know
+
+app.use(bodyParser.json());
+
+*) var favicon = require('serve-favicon');
+npm i serve-favicon --save
+
+*) It is used to add favicon.
+
+Example:
+--------
+app.use(favicon(path.join(__dirname, '/images/favicon.ico')))
+
+use this tag after 
+<link rel="icon" href="/public/favicon.ico">
+am not sure it works
+
+
+var morgan = require('morgan');	
+var rfs = require('rotating-file-stream')
+It is used for server log.
+Reference Link: "https://documentation.solarwinds.com/en/success_center/loggly/content/admin/node-express-js-morgan-logging.htm"
+Example:
+--------
+var accessLogStream = rfs.createStream('access.log', {
+  interval: '1d', // rotate daily
+  path: path.join(__dirname, 'log')
+})
+app.use(morgan('combined', { stream: accessLogStream }));
+
+
+require('dotenv').config()
+It is used for env file setup.
+Example:
+--------
+require('dotenv').config({path: './.env.example'});
+
+
+
+Reference Link: https://github.com/bradtraversy/proshop_mern    --Sample project
+Reference Link: https://nodejs.dev/learn/working-with-folders-in-nodejs    --For create folders to upload files
+
+*) var path = require('path');
+    - It is used to get current file path and set file paths.
+    - Refer below URL for different example of path.
+    Document URL: https://nodejs.org/docs/latest/api/path.html
+    Example: path.join('/foo', 'bar', 'baz/asdf', 'quux', '..');
+    -------- // Returns: '/foo/bar/baz/asdf'
+
+*) var bodyParser = require('body-parser');
+    - In order to get access to the post data we have to use body-parser.
+    - Basically what the body-parser is which allows express to read the body and then parse that into a Json object that we can understand.
+    - It parses the HTTP request body.
+    Express body-parser is an npm library used to process data sent through an HTTP request body. It exposes four express middlewares for parsing text, JSON, url-encoded and raw data set through an HTTP request body. These middlewares are functions that process incoming requests before they reach the target controller.
+    Example:
+    --------
+    // for parsing application/xwww-form-urlencoded
+    app.use(bodyParser.urlencoded({ extended: true }));
+    // for parsing application/json
+    app.use(bodyParser.json());
+
+*) require('dotenv')
+    - Dotenv is a zero-dependency module that loads environment variables from a .env file into process.env.
+    - Dotenv allows you to separate secrets from your source code.
+    - It enables .env files and in which store important details like DB config details
+    Example:
+    --------
+    require('dotenv').config({path: './.env.example'});
+    
+*) var morgan = require('morgan');
+    - morgan(format, options)
+    - It is used to log the each HTTP request on the logger.
+    - "Combined" is the better format, as i searched.
+    - Create a new morgan logger middleware function using the given format and options.
+    Example:
+    --------
+    app.use(morgan('combined', { stream: accessLogStream }));
+    In which, "{ stream: accessLogStream }" is the logging file method, for that need to install few packages.
+    var rfs = require('rotating-file-stream')
+    It is writable file, should rotatable based on the options.
+    Creates a stream.Writable to a file which is rotated. Rotation behaviour can be deeply customized
+    var accessLogStream = rfs.createStream('access.log', {
+        interval: '1d', // rotate daily
+        path: path.join(__dirname, 'log')
+    })
+    
+*) const winston = require('winston');
+    - Winston allows you to create custom loggers.
+    - This gives you the power to control and customize specific loggers based on your application services.
+    Example:
+    --------
+    const winston = require('winston');
+    const logger = winston.createLogger({
+      level: 'info',
+      format: winston.format.json(),
+      defaultMeta: { service: 'user-service' },
+      transports: [
+        //
+        // - Write all logs with level `error` and below to `error.log`
+        // - Write all logs with level `info` and below to `combined.log`
+        //
+        new winston.transports.File({ filename: 'error.log', level: 'error' }),
+        new winston.transports.File({ filename: 'combined.log' }),
+      ],
+    });
+    
+    //
+    // If we're not in production then log to the `console` with the format:
+    // `${info.level}: ${info.message} JSON.stringify({ ...rest }) `
+    //
+    if (process.env.NODE_ENV !== 'production') {
+      logger.add(new winston.transports.Console({
+        format: winston.format.simple(),
+      }));
+    }
+    
+*) var multer = require('multer');
+    - It is used for upload file in to the server.
+    - Multer is a node. js middleware for handling multipart/form-data , which is primarily used for uploading files.
+    - It is written on top of busboy for maximum efficiency. NOTE: Multer will not process any form which is not multipart ( multipart/form-data ).
+    Reference URL: https://expressjs.com/en/resources/middleware/multer.html
+    Example:
+    --------
+    
+    
+    
+    
+*) router.route('/').get(getProducts).post(protect, admin, createProduct)    //In which "post" method request is been send to three methods,
+    const protect = asyncHandler(async (req, res, next) => {
+        let token
+        if (
+            req.headers.authorization &&
+            req.headers.authorization.startsWith('Bearer')
+        ) {
+            try {
+                token = req.headers.authorization.split(' ')[1]
+                const decoded = jwt.verify(token, process.env.JWT_SECRET)
+                req.user = await User.findById(decoded.id).select('-password')
+                next()    //It means the "Everything correct go to next middleware or method"
+            } catch (error) {
+                console.error(error)
+                res.status(401)
+                throw new Error('Not authorized, token failed')    //It means the ""
+            }
+        }
+        if (!token) {
+            res.status(401)
+            throw new Error('Not authorized, no token')
+        }
+    })
+    const admin = (req, res, next) => {
+        if (req.user && req.user.isAdmin) {
+            next()
+        } else {
+            res.status(401)
+            throw new Error('Not authorized as an admin')
+        }
+    }
+    const createProduct = asyncHandler(async (req, res) => {
+        const product = new Product({
+            name: 'Sample name',
+            price: 0,
+            user: req.user._id,
+            image: '/images/sample.jpg',
+            brand: 'Sample brand',
+            category: 'Sample category',
+            countInStock: 0,
+            numReviews: 0,
+            description: 'Sample description',
+        })
+      const createdProduct = await product.save()
+      res.status(201).json(createdProduct)
+    })
+
+Make available "Import" on node js:
+-----------------------------------
+*) The import statement is used to import modules that are exported by some other module. A module is a file that contains a piece of reusable code. The import modules are in strict mode whether it is declared or not.
+
+Node js doesn’t support ES6 import directly. If we try to use import for importing modules directly in node js it will throw out the error.
+
+Node has experimental support for ES modules. To enable them we need to make some changes to the package.json file. Before following the steps make sure that Node is installed. Below are the steps to achieve the same.
+
+In the package.json file add “type” : “module”. Adding this enables ES6 modules.
+
+The package.json file should look like this:
+
+*) ES6 stands for ECMAScript 6. ECMAScript was created to standardize JavaScript, and ES6 is the 6th version of ECMAScript, it was published in 2015, and is also known as ECMAScript 2015
+
+*) React uses ES6, and you should be familiar with some of the new features like:
+    - Classes
+    - Arrow Functions
+    - Variables (let, const, var)
+    
+    
+*) HTTP status    
+    Reference Link: https://httpstatuses.com/    //HTTP status codes
+    1×× Informational
+    100 Continue
+    101 Switching Protocols
+    102 Processing
+
+    2×× Success
+    200 OK
+    201 Created
+    202 Accepted
+    203 Non-authoritative Information
+    204 No Content
+    205 Reset Content
+    206 Partial Content
+    207 Multi-Status
+    208 Already Reported
+    226 IM Used
+
+    3×× Redirection
+    300 Multiple Choices
+    301 Moved Permanently
+    302 Found
+    303 See Other
+    304 Not Modified
+    305 Use Proxy
+    307 Temporary Redirect
+    308 Permanent Redirect
+
+    4×× Client Error
+    400 Bad Request
+    401 Unauthorized    //Without token
+    402 Payment Required
+    403 Forbidden
+    404 Not Found
+    405 Method Not Allowed
+    406 Not Acceptable
+    407 Proxy Authentication Required
+    408 Request Timeout
+    409 Conflict
+    410 Gone
+    411 Length Required
+    412 Precondition Failed
+    413 Payload Too Large
+    414 Request-URI Too Long
+    415 Unsupported Media Type
+    416 Requested Range Not Satisfiable
+    417 Expectation Failed
+    418 I'm a teapot
+    421 Misdirected Request
+    422 Unprocessable Entity
+    423 Locked
+    424 Failed Dependency
+    426 Upgrade Required
+    428 Precondition Required
+    429 Too Many Requests
+    431 Request Header Fields Too Large
+    444 Connection Closed Without Response
+    451 Unavailable For Legal Reasons
+    499 Client Closed Request
+
+    5×× Server Error
+    500 Internal Server Error
+    501 Not Implemented
+    502 Bad Gateway
+    503 Service Unavailable
+    504 Gateway Timeout
+    505 HTTP Version Not Supported
+    506 Variant Also Negotiates
+    507 Insufficient Storage
+    508 Loop Detected
+    510 Not Extended
+    511 Network Authentication Required
+    599 Network Connect Timeout Error

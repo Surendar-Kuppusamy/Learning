@@ -1,0 +1,4 @@
+npm i redux-thunk        --    Handle middleware for redux
+npm i redux-persist        --    To store in local storage
+https://github.com/aditya-sridhar/simple-reactjs-app
+https://mongoosejs.com/docs/api.html#query_Query-setOptions        --    Mongoose Query options

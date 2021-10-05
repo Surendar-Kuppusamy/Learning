@@ -1,0 +1,1086 @@
+Express:
+--------
+
+
+curl -X POST -H "Authorization: token 551d0c1961164cd3bea6b9a035777881" -H 'Content-type: application/json' -d  '{"name":"Tamil", "mfa":false}' 'http://localhost:3000/'
+
+curl -X GET -H "Authorization: token 53218b5c73ba39178f435162fdccbf10" -H 'Content-type: application/json' 'http://localhost:3000/'
+
+
+https://www.geeksforgeeks.org/express-js-res-download-function/
+https://github.com/expressjs/multer/issues/186
+https://www.npmjs.com/package/morgan
+
+
+
+Express is a minimal and flexible Node.js web application framework that provides a robust set of features for web and mobile applications. It is an open source framework developed and maintained by the Node.js foundation.
+ExpressJS is a web application framework that provides you with a simple API to build websites, web apps and back ends. With ExpressJS, you need not worry about low level protocols, processes, etc.
+Express was developed by TJ Holowaychuk and is maintained by the Node.js foundation and numerous open source contributors.
+
+Nodemon tool restarts our server as soon as we make a change in any of our files, otherwise we need to restart the server manually after each file modification. To install nodemon, use the following command ?
+npm install -g nodemon
+
+Simple Example:
+---------------
+
+ar express = require('express');
+var app = express();
+app.get('/', function(req, res){
+res.send("Hello world!");
+});
+app.listen(3000);
+
+Run this => nodemon index.js
+
+Explanation:
+------------
+
+app.get(route, callback) // route is path you want and callback is a function
+
+app.listen(port, [host], [backlog], [callback]])
+//port - A port number on which the server should accept incoming requests.
+//host - Name of the domain. You need to set it when you deploy your apps to the cloud.
+//backlog - The maximum number of queued pending connections. The default is 511.
+//callback - An asynchronous function that is called when the server starts listening for requests.
+
+app.method(path, handler)
+//method refers to http methods - GET, POST, PUT, DELETE
+
+Example:
+--------
+
+app.post('/hello', function(req, res){
+res.send("You just called the post method at '/hello'!\n");
+});
+
+Above request is equal to => [curl -X POST "http://localhost:3000/hello"]
+
+app.all('/test', function(req, res){
+res.send("HTTP method doesn't have any effect on this route!");
+});
+
+Above example request is accepts any method on this route.
+
+Separate File for Routes:
+-------------------------
+To separate the routes from our main index.js file, we will use Express.Router. Create a new file called routes.js and type the following in it.
+
+Example:
+--------
+File => routes.js
+------------------
+
+var express = require('express');
+var router = express.Router();
+
+router.get('/', function(req, res){
+res.send('GET route on things.');
+});
+router.post('/', function(req, res){
+res.send('POST route on things.');
+});
+//export this router to use in our index.js
+module.exports = router;
+
+
+File => index.js
+------------------
+
+var express = require('Express');
+var app = express();
+
+var routes = require('./routes.js');
+
+//both index.js and things.js should be in same directory
+app.use('/root_route', routes);
+
+app.listen(3000);
+
+
+Output for above example:
+--------------------------
+Run : localhost:3000/root_route
+GET route on things
+
+Dynamic Routes:
+---------------
+
+Dynamic routes are send id on url for get details of any data.
+
+Example:
+--------
+app.get('/:id', function(req, res){
+res.send('The id you specified is ' + req.params.id);
+});
+
+app.get('/things/:name/:id', function(req, res) {
+res.send('id: ' + req.params.id + ' and name: ' + req.params.name);
+});
+
+You can use the req.params object to access all the parameters you pass in the url.
+
+Use regex on it,
+
+app.get('/things/:id([0-9]{5})', function(req, res){
+res.send('id: ' + req.params.id);
+});
+
+Note that this will only match the requests that have a 5-digit long id.
+If none of your routes match the request, you'll get a "Cannot GET " message as response. This message be replaced by a 404 not found page using this simple route ?
+
+Important ? This below route should be placed after all your routes, as Express matches routes from start to end of the index.js file, including the external routers you required.
+
+app.get('*', function(req, res){
+res.send('Sorry, this is an invalid URL.');
+});
+
+While for an incorrect URL request, the following output is displayed.
+Output: Sorry, this is an invalid URL.
+
+Middleware:
+-----------
+Middleware functions are functions that have access to the request object (req), the response object (res).
+Middleware execution order is based on code order, check below example
+
+Example:
+--------
+
+//First middleware before response is sent
+app.use(function(req, res, next){
+console.log("Start");
+next();
+});
+
+//Route handler
+app.get('/', function(req, res, next){
+res.send("Middle");
+next();
+});
+
+app.use('/', function(req, res){
+console.log('End');
+});
+
+Output:
+-------
+Start
+End
+
+Reference Diagram link : https://www.tutorialspoint.com/expressjs/expressjs_middleware.htm
+
+body-parser:
+------------
+This is used to parse the body of requests which have payloads attached to them. To mount body parser, if express will not install, then we need to install it using npm install --save body-parser
+
+Example:
+--------
+//To parse URL encoded data
+app.use(bodyParser.urlencoded({ extended: false }))
+
+//To parse json data
+app.use(bodyParser.json())
+
+To view all available options for body-parser, visit its github page.
+
+cookie-parser:
+--------------
+It parses Cookie header and populate req.cookies with an object keyed by cookie names. To mount cookie parser, we need to install it using npm install --save cookie-parser and to mount it, include the following lines in your index.js ?
+
+Example:
+--------
+var cookieParser = require('cookie-parser');
+app.use(cookieParser())
+
+express-session:
+----------------
+It creates a session middleware with the given options. We will discuss its usage in the Sessions section.
+We have many other third party middleware in ExpressJS. However, we have discussed only a few important ones here.
+
+
+Render HTML views:
+------------------
+
+Refer this link for render html views.
+https://www.tutorialspoint.com/expressjs/expressjs_templating.htm
+
+Static Files:
+-------------
+Static files are files that clients download as they are from the server. Create a new directory, public.
+Express, by default does not allow you to serve static files. You need to enable it using the following built-in middleware.
+
+Note ? Express looks up the files relative to the static directory, so the name of the static directory is not part of the URL.
+
+Note that the root route is now set to your public dir, so all static files you load will be considering public as root. To test that this is working fine, add any image file in your new public dir and change its name to "testimage.jpg". In your views, create a new view and include this file like ?
+
+Example:
+--------
+img(src = "/testimage.jpg", alt = "Testing Image
+
+For allow, add this code:
+
+Example:
+--------
+app.use(express.static('public'));
+
+
+Multiple Static Directories:
+----------------------------
+var express = require('express');
+var app = express();
+
+app.use(express.static('public'));
+app.use(express.static('images'));
+
+app.listen(3000);
+
+
+Forms:
+------
+Forms are an integral part of the web. Almost every website we visit offers us forms that submit or fetch some information for us. To get started with forms, we will first install the body-parser(for parsing JSON and url-encoded data) and multer(for parsing multipart/form data) middleware.
+To install the body-parser and multer, go to your terminal and use ?
+npm install --save body-parser multer
+
+Example:
+--------
+var express = require('express');
+var bodyParser = require('body-parser');
+var multer = require('multer');
+var upload = multer();
+var app = express();
+
+app.get('/', function(req, res){
+res.render('form');
+});
+
+app.set('view engine', 'pug');
+app.set('views', './views');
+
+// for parsing application/json
+app.use(bodyParser.json());
+
+// for parsing application/xwww-
+app.use(bodyParser.urlencoded({ extended: true }));
+//form-urlencoded
+
+// for parsing multipart/form-data
+app.use(upload.array());
+app.use(express.static('public'));
+
+app.post('/', function(req, res){
+console.log(req.body);
+res.send("recieved your request!");
+});
+app.listen(3000);
+
+After importing the body parser and multer, we will use the body-parser for parsing json and x-www-form-urlencoded header requests, while we will use multer for parsing multipart/form-data.
+
+Database:
+---------
+For this refer Mongodb and mongoose tutorials.
+Every collection name adds 's' automatically.
+Data type "String" only returns string and number other types are skipped.
+
+Reference Link: https://mongoosejs.com/docs/api.html#model_Model.create
+---------------
+
+Quick example for reference:
+Example:
+--------
+
+Model:
+------
+var express = require('express');
+var app = express();
+
+var mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost/my_db');
+
+var personSchema = mongoose.Schema({
+name: String,
+age: Number,
+nationality: String
+});
+
+var Person = mongoose.model("Person", personSchema);
+
+app.get('/people', function(req, res){
+Person.find(function(err, response){
+res.json(response);
+});
+});
+
+app.listen(3000);
+
+Express js:
+-----------
+
+app.post('/person', function(req, res){
+var personInfo = req.body; //Get the parsed information
+
+if(!personInfo.name || !personInfo.age || !personInfo.nationality){
+res.render('show_message', {
+message: "Sorry, you provided worng info", type: "error"});
+} else {
+var newPerson = new Person({
+name: personInfo.name,
+age: personInfo.age,
+nationality: personInfo.nationality
+});
+
+newPerson.save(function(err, Person){
+if(err)
+res.render('show_message', {message: "Database error", type: "error"});
+else
+res.render('show_message', {
+message: "New person added", type: "success", person: personInfo});
+});
+}
+});
+
+
+Person.find(function(err, response){
+console.log(response);
+});
+
+
+Person.find({name: "Ayush", age: 20},
+function(err, response){
+console.log(response);
+});
+
+
+Person.find({nationality: "Indian"}, "name", function(err, response){
+console.log(response);
+});
+
+
+Person.findById("507f1f77bcf86cd799439011", function(err, response){
+console.log(response);
+});
+
+Cookies:
+--------
+Cookies are simple, small files/data that are sent to client with a server request and stored on the client side. Every time the user loads the website back, this cookie is sent with the request. This helps us keep track of the user?s actions.
+The following are the numerous uses of the HTTP Cookies ?
+Session management
+Personalization(Recommendation systems)
+User tracking
+To use cookies with Express, we need the cookie-parser middleware. To install it, use the following code ?
+
+npm install --save cookie-parser
+
+Now to use cookies with Express, we will require the cookie-parser. cookie-parser is a middleware which parses cookies attached to the client request object.
+
+var cookieParser = require('cookie-parser');
+app.use(cookieParser());
+
+Example:
+--------
+app.get('/', function(req, res){
+res.cookie('name', 'express').send('cookie set'); //Sets name = express
+});
+
+console.log(document.cookie); //"name = express"
+console.log('Cookies: ', req.cookies); //Cookies: { name: 'express' }
+
+Adding Cookies with Expiration Time:
+------------------------------------
+//Expires after 360000 ms from the time it is set.
+res.cookie(name, 'value', {expire: 360000 + Date.now()});
+
+//This cookie also expires after 360000 ms from the time it is set.
+res.cookie(name, 'value', {maxAge: 360000});
+
+Deleting Existing Cookies:
+--------------------------
+
+app.get('/clear_cookie_foo', function(req, res){
+res.clearCookie('foo');
+res.send('cookie foo cleared');
+});
+
+
+
+Session:
+--------
+
+HTTP is stateless; in order to associate a request to any other request, you need a way to store user data between HTTP requests. Cookies and URL parameters are both suitable ways to transport data between the client and the server. But they are both readable and on the client side. Sessions solve exactly this problem. You assign the client an ID and it makes all further requests using that ID. Information associated with the client is stored on the server linked to this ID.
+We will need the Express-session, so install it using the following code.
+
+npm install --save express-session
+
+We will put the session and cookie-parser middleware in place. In this example, we will use the default store for storing sessions, i.e., MemoryStore. Never use this in production environments. The session middleware handles all things for us, i.e., creating the session, setting the session cookie and creating the session object in req object.
+Whenever we make a request from the same client again, we will have their session information stored with us (given that the server was not restarted). We can add more properties to the session object. In the following example, we will create a view counter for a client.
+
+Example:
+--------
+
+var express = require('express');
+var cookieParser = require('cookie-parser');
+var session = require('express-session');
+
+var app = express();
+
+app.use(cookieParser());
+app.use(session({secret: "Shh, its a secret!"}));
+
+app.get('/', function(req, res){
+if(req.session.page_views){
+req.session.page_views++;
+res.send("You visited this page " + req.session.page_views + " times");
+} else {
+req.session.page_views = 1;
+res.send("Welcome to this page for the first time!");
+}
+});
+app.listen(3000);
+
+What the above code does is, when a user visits the site, it creates a new session for the user and assigns them a cookie. Next time the user comes, the cookie is checked and the page_view session variable is updated accordingly.
+
+For more information check it on its site.
+
+
+Authentication:
+---------------
+
+Authentication is a process in which the credentials provided are compared to those on file in a database of authorized users' information on a local operating system or within an authentication server. If the credentials match, the process is completed and the user is granted authorization for access.
+
+Refer this link => "https://www.tutorialspoint.com/expressjs/expressjs_authentication.htm"
+
+
+
+Scaffolding:
+------------
+
+Scaffolding allows us to easily create a skeleton for a web application. We manually create our public directory, add middleware, create separate route files, etc. A scaffolding tool sets up all these things for us so that we can directly get started with building our application.
+
+The scaffolder we will use is called Yeoman. It is a scaffolding tool built for Node.js but also has generators for several other frameworks (like flask, rails, django, etc.). To install Yeoman, enter the following command in your terminal ?
+
+// npm install -g yeoman
+
+Yeoman uses generators to scaffold out applications. To check out the generators available on npm to use with Yeoman, you can click on this link. In this tutorial, we will use the 'generator-Express-simple'. To install this generator, enter the following command in your terminal ?
+
+// npm install -g generator-express-simple
+
+To use this generator, enter the following command ?
+
+// yo express-simple test-app
+
+Reference Link: "https://www.tutorialspoint.com/expressjs/expressjs_scaffolding.htm"
+
+
+Error handling:
+---------------
+You must place the error at last.
+Reference Link: => "https://expressjs.com/en/guide/error-handling.html"
+Reference Link: => "https://www.tutorialspoint.com/expressjs/expressjs_error_handling.htm"
+
+Error handling in Express is done using middleware. But this middleware has special properties. The error handling middleware are defined in the same way as other middleware functions, except that error-handling functions MUST have four arguments instead of three ? err, req, res, next. For example, to send a response on any error, we can use ?
+
+Example:
+--------
+app.use(function(err, req, res, next) {
+console.error(err.stack);
+res.status(500).send('Something broke!');
+});
+
+Till now we were handling errors in the routes itself. The error handling middleware allows us to separate our error logic and send responses accordingly. The next() method we discussed in middleware takes us to next middleware/route handler.
+
+For error handling, we have the next(err) function. A call to this function skips all middleware and matches us to the next error handler for that route. Let us understand this through an example.
+
+Simple Example:
+---------------
+var express = require('express');
+var app = express();
+app.get('/', function(req, res){
+//Create an error and pass it to the next function
+var err = new Error("Something went wrong");
+next(err);
+});
+/*
+* other route handlers and middleware here
+* ....
+*/
+//An error handling middleware
+app.use(function(err, req, res, next) {
+res.status(500);
+res.send("Oops, something went wrong.")
+});
+app.listen(3000);
+
+This error handling middleware can be strategically placed after routes or contain conditions to detect error types and respond to the clients accordingly. The above program will display the following output.
+
+If you call next() with an error after you have started writing the response (for example, if you encounter an error while streaming the response to the client) the Express default error handler closes the connection and fails the request.
+So when you add a custom error handler, you must delegate to the default Express error handler, when the headers have already been sent to the client:
+
+
+Debugging Express:
+------------------
+Express uses the debug module internally to log information about route matches, middleware functions that are in use, application mode, and the flow of the request-response cycle.
+
+To see all the internal logs used in Express, set the DEBUG environment variable to express:* when launching your app.
+
+set DEBUG=express:* & node index.js //command for windows 
+
+
+Error Handling:
+---------------
+*) "next()" it will pass to next middleware or route action, if we pass next(err), then express catch the error and stop execution
+*) On asynchronous code, express automatically catchs error and pass it to next(), we don't need to mention it.
+
+*) Error Handling refers to how Express catches and processes errors that occur both synchronously and asynchronously
+*) Express comes with a default error handler so you don’t need to write your own to get started.
+Catching Errors
+*) Errors that occur in synchronous code inside route handlers and middleware require no extra work.
+*) If synchronous code throws an error, then Express will catch and process it. For example:
+app.get('/', function (req, res) {
+  throw new Error('BROKEN') // Express will catch this on its own.
+})
+*) For errors returned from asynchronous functions invoked by route handlers and middleware, you must pass them to the next() function, where Express will catch and process them. For example:
+app.get('/', function (req, res, next) {
+  fs.readFile('/file-does-not-exist', function (err, data) {    //It is asynchronous function
+    if (err) {
+      next(err) // Pass errors to Express.
+    } else {
+      res.send(data)
+    }
+  })
+})
+
+*) Starting with Express 5, route handlers and middleware that return a Promise will call next(value) automatically when they reject or throw an error. For example:
+app.get('/user/:id', async function (req, res, next) {
+  var user = await getUserById(req.params.id)
+  res.send(user)
+})
+*) If you pass anything to the next() function (except the string 'route'), Express regards the current request as being an error and will skip any remaining non-error handling routing and middleware functions.
+*) If the callback in a sequence provides no data, only errors, you can simplify this code as follows:
+app.get('/', [
+  function (req, res, next) {
+    fs.writeFile('/inaccessible-path', 'data', next)
+  },
+  function (req, res) {
+    res.send('OK')
+  }
+])
+*) In the above example next is provided as the callback for fs.writeFile, which is called with or without errors. If there is no error the second handler is executed, otherwise Express catches and processes the error.
+*) You must catch errors that occur in asynchronous code invoked by route handlers or middleware and pass them to Express for processing. For example:
+app.get('/', function (req, res, next) {
+  setTimeout(function () {
+    try {
+      throw new Error('BROKEN')
+    } catch (err) {
+      next(err)
+    }
+  }, 100)
+})
+Writing error handlers:
+-----------------------
+Define error-handling middleware functions in the same way as other middleware functions, except error-handling functions have four arguments instead of three: (err, req, res, next). For example:
+app.use(function (err, req, res, next) {
+  console.error(err.stack)
+  res.status(500).send('Something broke!')
+})
+You define error-handling middleware last, after other app.use() and routes calls; for example:
+var bodyParser = require('body-parser')
+var methodOverride = require('method-override')
+
+app.use(bodyParser.urlencoded({
+  extended: true
+}))
+app.use(bodyParser.json())
+app.use(methodOverride())
+app.use(function (err, req, res, next) {
+  // logic
+})
+
+How do I handle 404 responses?:[Not Found URL]
+----------------------------------------------
+In Express, 404 responses are not the result of an error, so the error-handler middleware will not capture them. This behavior is because a 404 response simply indicates the absence of additional work to do; in other words, Express has executed all middleware functions and routes, and found that none of them responded. All you need to do is add a middleware function at the very bottom of the stack (below all other functions) to handle a 404 response:
+app.use(function (req, res, next) {
+  res.status(404).send("Sorry can't find that!")
+})
+How do I setup an error handler?
+--------------------------------
+You define error-handling middleware in the same way as other middleware, except with four arguments instead of three; specifically with the signature (err, req, res, next):
+app.use(function (err, req, res, next) {
+  console.error(err.stack)
+  res.status(500).send('Something broke!')
+})
+How do I render plain HTML?
+---------------------------
+You don’t! There’s no need to “render” HTML with the res.render() function. If you have a specific file, use the res.sendFile() function. If you are serving many assets from a directory, use the express.static() middleware function.
+
+router.route(path):
+-------------------
+Returns an instance of a single route which you can then use to handle HTTP verbs with optional middleware. Use router.route() to avoid duplicate route naming and thus typing errors.
+For one route, we can uptain various HTTP methods.
+Example:
+--------
+const router = express.Router()
+router
+  .route('/:id')
+  .delete(protect, admin, deleteUser)
+  .get(protect, admin, getUserById)
+  .put(protect, admin, updateUser)
+  
+  
+app.get('/test',(req,res,next) => {
+  //throw new Error('Try')
+  error_variable_consssdf;	//This error is captured by express
+  res.send('GeeksforGeeks');
+})
+
+
+Express Error Capture Example:
+------------------------------
+
+app.get('/test',(req,res,next) => {
+  //throw new Error('Try')
+  error_variable_consssdf;
+  setTimeout(() => {
+   error_variable_consssdf;	//This error is not captured by express
+  })
+  res.send('GeeksforGeeks');
+})
+
+
+app.get('/test',(req,res,next) => {
+  //throw new Error('Try')
+  error_variable_consssdf;
+  setTimeout(() => {
+   error_variable_consssdf;	//This error is not captured by express
+  })
+  res.send('GeeksforGeeks');
+})
+
+
+app.get('/test',(req,res,next) => {
+  //throw new Error('Try')
+  error_variable_consssdf;
+  setTimeout(() => {
+   next('Error')
+  })
+  res.send('GeeksforGeeks');	//It makes error because, once error handled, then if set res.send
+})
+
+
+app.get('/test',(req,res,next) => {
+  //throw new Error('Try')
+  error_variable_consssdf;
+  setTimeout(() => {
+   next('Error')	//This error is not captured by express
+  })
+})
+
+
+Express Validators:
+-------------------
+*) express-validator is a set of express.js middlewares that wraps validator.js validator and sanitizer functions.
+*) Validation functions are in this express validators are all come from "validator.js"[Reference Link: https://github.com/validatorjs/validator.js#validators]
+Simple Example:
+---------------
+const { body, validationResult } = require('express-validator');
+app.post(
+  '/user',
+  // username must be an email
+  body('username').isEmail(),
+  // password must be at least 5 chars long
+  body('password').isLength({ min: 5 }),
+  (req, res) => {
+    // Finds the validation errors in this request and wraps them in an object with handy functions
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    User.create({
+      username: req.body.username,
+      password: req.body.password,
+    }).then(user => res.json(user));
+  },
+)
+Now, whenever a request that includes invalid username or password fields is submitted, your server will respond like this:
+{
+  "errors": [
+    {
+      "location": "body",
+      "msg": "Invalid value",
+      "param": "username"
+    }
+  ]
+}
+Sanitizers:
+-----------
+*) Sanitizers are used to trim and sanitize form values.
+Example:
+--------
+const express = require('express');
+const { body } = require('express-validator');
+const app = express();
+app.use(express.json());
+app.post(
+  '/comment',
+  body('email').isEmail().normalizeEmail(),    //here email is sanitized
+  body('text').not().isEmpty().trim().escape(),
+  body('notifyOnReply').toBoolean(),
+  (req, res) => {
+    // Handle the request somehow
+  },
+);
+custom validator:
+-----------------
+*) In which custom validator is also available with the method "custom(validator)"
+Example:
+--------
+const { body } = require('express-validator');
+app.post(
+  '/user',
+  body('email').custom(value => {
+    return User.findUserByEmail(value).then(user => {
+      if(user) {
+        return Promise.reject('E-mail already in use');
+      }
+    });
+  }),
+  (req, res) => {
+    // Handle the request
+  },
+);
+
+Custom Error Messages:
+----------------------
+*) Custom error message is delivered using below method.
+.withMessage(message)
+message: the error message to use for the previous validator
+Example:
+--------
+const { check } = require('express-validator');
+app.post(
+  '/user',
+  // ...some other validations...
+  check('password')
+    .isLength({ min: 5 })
+    .withMessage('must be at least 5 chars long')
+    .matches(/\d/)
+    .withMessage('must contain a number'),
+  (req, res) => {
+    // Handle the request somehow
+  },
+);
+*) If we didn't mention custom messages then it will send default error message.
+*) If you're using a custom validator, then it may very well throw or reject promises to indicate an invalid value or error message.
+Example:
+--------
+return Promise.reject('E-mail already in use');
+Complex errors:
+---------------
+If sometimes, we can't descripe error message in single string, so that we can also use object in it.
+Example:
+--------
+// check(field, withMessage) and .withMessage() work the same
+check('email').isEmail().withMessage({
+  message: 'Not an email',
+  errorCode: 1,
+})
+Dynamic messages:
+-----------------
+We can also create dynamic messages based on error values.
+This is specially useful if you use a translation library to provide tailored messages:
+Example:
+--------
+// check(field, withMessage) and .withMessage() work the same
+check('something').isInt().withMessage((value, { req, location, path }) => {
+  return req.translate('validation.message.path', { value, location, path });    //In which translate the message
+}),
+check('somethingElse', (value, { req, location, path }) => {
+  return req.translate('validation.message.path', { value, location, path });
+}),
+// oneOf is special though - it only receives the req object for now
+oneOf([someValidation, anotherValidation], ({ req }) => {
+  return req.translate('validation.multiple_failures');
+});
+Wildcards:
+----------
+Sometimes you will want to apply the same rules to all items of an array or all keys of some object. That's what the * character -- also known as a wildcard -- is for.
+Example:
+--------
+const express = require('express');
+const { check } = require('express-validator');
+const app = express();
+app.use(express.json());
+app.post(
+  '/addresses',
+  check('addresses.*.postalCode').isPostalCode(),
+  check('addresses.*.number').toInt(),
+  (req, res) => {
+    // Handle the request
+  },
+);
+This will handle cases where you send an array of addresses:
+{
+  "addresses": [
+    { "postalCode": "2010", "number": "500" },
+    { "postalCode": "", "number": "501" }
+  ]
+}
+...or even cases where you want a predefined set of addresses:
+{
+  "addresses": {
+    "home": { "postalCode": "", "number": "501" },
+    "work": { "postalCode": "2010", "number": "500" }
+  }
+}
+
+Schema Validation:
+------------------
+*) It is nothing but, build an object with form field as "keys" and validation as "values" and check it at "checkSchema()" method.
+*) Schemas are a special, object-based way of defining validations or sanitizations on requests.
+At the root-level, you specify field paths as keys, and objects as values -- which define the error messages, locations and validations/sanitizations.
+Reference Link: https://stackabuse.com/form-data-validation-in-nodejs-with-express-validator/#schemavalidationwithexpressvalidator
+Example:
+--------
+const { checkSchema } = require('express-validator');
+app.put(
+  '/user/:id/password',
+  checkSchema({
+    id: {
+      // The location of the field, can be one or more of body, cookies, headers, params or query.
+      // If omitted, all request locations will be checked
+      in: ['params', 'query'],
+      errorMessage: 'ID is wrong',
+      isInt: true,
+      // Sanitizers can go here as well
+      toInt: true,
+    },
+    myCustomField: {
+      // Custom validators
+      custom: {
+        options: (value, { req, location, path }) => {
+          return value + req.body.foo + location + path;
+        },
+      },
+      // and sanitizers
+      customSanitizer: {
+        options: (value, { req, location, path }) => {
+          let sanitizedValue;
+
+          if (req.body.foo && location && path) {
+            sanitizedValue = parseInt(value);
+          } else {
+            sanitizedValue = 0;
+          }
+
+          return sanitizedValue;
+        },
+      },
+    },
+    password: {
+      isLength: {
+        errorMessage: 'Password should be at least 7 chars long',
+        // Multiple options would be expressed as an array
+        options: { min: 7 },
+      },
+    },
+    firstName: {
+      isUppercase: {
+        // To negate a validator
+        negated: true,
+      },
+      rtrim: {
+        // Options as an array
+        options: [[' ', '-']],
+      },
+    },
+    // Support bail functionality in schemas
+    email: {
+      isEmail: {
+        bail: true,
+      },
+    },
+    // Wildcards/dots for nested fields work as well
+    'addresses.*.postalCode': {
+      // Make this field optional when undefined or null
+      optional: { options: { nullable: true } },
+      isPostalCode: true,
+    },
+  }),
+  (req, res, next) => {
+    // handle the request as usual
+  },
+);
+Whole Body Validation:
+----------------------
+Sometimes you need to validate a request whose body is a string, an array, or even a number! That's why you can omit the field to validate, and check req.body directly:
+*) Check type[array, object] of form values is comes.
+Example:    //This example is not more relevant to this.
+--------
+const bodyParser = require('body-parser');
+const express = require('express');
+const { body } = require('express-validator');
+
+const app = express();
+
+// Will handle text/plain requests
+app.use(bodyParser.text());
+
+app.post('/recover-password', body().isEmail(), (req, res) => {
+  // Assume the validity of the request was already checked
+  User.recoverPassword(req.body).then(() => {
+    res.send('Password recovered!');
+  });
+});
+Validation middlewares:
+-----------------------
+Creates a validation chain for one or more fields. They may be located in any of the following request objects:
+    req.body
+    req.cookies
+    req.headers
+    req.params
+    req.query
+    
+Syntax:
+-------
+body([fields, message])
+
+Same as check([fields, message]), but only checking req.body.
+cookie([fields, message])
+
+Same as check([fields, message]), but only checking req.cookies.
+header([fields, message])
+
+Same as check([fields, message]), but only checking req.headers.
+param([fields, message])
+
+Same as check([fields, message]), but only checking req.params.
+query([fields, message])
+
+Same as check([fields, message]), but only checking req.query.
+checkSchema(schema)
+
+Check For Additional Methods:
+-----------------------------
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+*) If some validation method is not found in "validation.js", then refer this below reference link, for additional methods
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+Reference Link:    https://express-validator.github.io/docs/validation-chain-api.html#additional-methods
+---------------
+
+.bail():
+--------
+If sometimes we need to check multiple validation for single fields, at that time use this method to check if first validation is failed then it skips next all validation for that fields.
+Example:
+--------
+app.post('/', [
+  check('username')
+    .isEmail()
+    .bail()
+    // If username is not an email, checkBlacklistedDomain will never run
+    .custom(checkBlacklistedDomain)
+    .bail()
+    // If username is not an email or has a blacklisted domain, checkEmailExists will never run
+    .custom(checkEmailExists);
+]);
+
+For replace form values, we can use this link, https://express-validator.github.io/docs/sanitization-chain-api.html#additional-methods
+
+.formatWith(formatter)
+*) Change error message form
+    formatter(error): the function to use to format when returning errors.
+   The error argument is an object in the format of { location, msg, param, value, nestedErrors }, as described above.
+Example:
+--------
+const { validationResult } = require('express-validator');
+app.post('/create-user', yourValidationChains, (req, res, next) => {
+  const errorFormatter = ({ location, msg, param, value, nestedErrors }) => {
+    // Build your resulting errors however you want! String, object, whatever - it works!
+    return `${location}[${param}]: ${msg}`;
+  };
+  const result = validationResult(req).formatWith(errorFormatter);
+  if (!result.isEmpty()) {
+    // Response will contain something like
+    // { errors: [ "body[password]: must be at least 10 chars long" ] }
+    return res.json({ errors: result.array() });
+  }
+
+  // Handle your request as if no errors happened
+});
+
+.mapped()
+---------
+    Returns: an object where the keys are the field names, and the values are the validation errors
+    Gets the first validation error of each failed field in the form of an object.
+
+validationResult(req):
+----------------------
+*) Extracts the validation errors from a request and makes them available in a Result object.
+*) Each error returned by .array() and .mapped() methods has the following format by default:
+{
+  "msg": "The error message",
+  "param": "param.name.with.index[0]",
+  "value": "param value",
+  // Location of the param that generated this error.
+  // It's either body, query, params, cookies or headers.
+  "location": "body",
+
+  // nestedErrors only exist when using the oneOf function
+  "nestedErrors": [{ ... }]
+}
+
+.isEmpty()
+----------
+    Returns: a boolean indicating whether this result object contains no errors at all.
+Example:
+--------
+app.post('/create-user', yourValidationChains, (req, res) => {
+  const result = validationResult(req);
+  const hasErrors = !result.isEmpty();
+  // do something if hasErrors is true
+});
+
+*) If we want to check one field values is set then check another field. For example, if we want to check "confirm password", first we need to check "password" is set. [Reference Link] => https://express-validator.github.io/docs/validation-chain-api.html#ifcondition
+
+
+CORS Issue:
+-----------
+Reference Link : http://expressjs.com/en/resources/middleware/cors.html
+
+*) next(err) and throw new Error('Error') both this are send to error handler which is set by ourself in express.
+*) "asyncHandler" it is also capture the mongoose error and automatically send to error handler which is set by ourself in express.
+
+
+Catch Mongoose validation error in express error handler:
+---------------------------------------------------------
+import mongoose from 'mongoose';
+const errorHandler = (err, req, res, next) => {
+    console.log('Hanler==>'+err);
+    const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
+
+    if(err instanceof mongoose.Error.ValidationError) {	//It catch validation errors and handles error message and return it.
+
+        let errorMessage = 'Something went wrong';
+        Object.entries(err).forEach(([key, value]) => {
+            if(key == 'errors') {
+                Object.entries(value).every(([subkey, subvalue]) => {
+                    errorMessage = subvalue.message;
+                    if(errorMessage != 'Something went wrong') {
+                        return false;
+                    }
+                });
+            }
+        });
+        res.status(200)
+        res.json({
+            message: errorMessage,
+            status: 'error',
+            code: 404,
+            mongosse:err
+        })
+    } else {
+        res.status(statusCode)
+        res.json({
+            message: err.message,
+            status: 'error',
+            code: 500
+        })
+    }
+}

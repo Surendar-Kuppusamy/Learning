@@ -1,0 +1,75 @@
+$$$$$$$$$$$$		Important		$$$$$$$$$$$$$$$$$
+
+Always use SSH key instead of https url.
+
+Should not use below example:
+
+Example: git remote add origin https://github.com/Surendar-Kuppusamy/Nodejs.git
+
+
+Should be use below example:
+
+Example: git remote add origin git@github.com:Surendar-Kuppusamy/Nodejs.git
+
+$$$$$$$$$$$$		Important		$$$$$$$$$$$$$$$$$
+
+When access denied, while push the data to remote, so try this.
+Step 1: Run command "ssh-keygen" on git bash.
+Step 2: Keep enter when asks input from me.
+Step 3: Go to path "C:\Users\HP\.ssh" and get key from file "id_rsa.pub"
+Step 4: Login into github and go to "Setting" -> "SSH and GPG Keys" -> "Add key on SSH Keys" [Reference link => "https://github.com/settings/keys"]
+Step 5: Now try to push, now it works.
+
+
+
+###########################################################################################################################################
+
+Reference: https://stackoverflow.com/questions/47459674/no-such-remote-origin-while-multiple-push#answer-47459850
+
+
+git remote add origin git@github.com:USERNAME/REPO-1.git
+git remote set-url --add --push origin git@gitlab.com:USERNAME/REPO-2.git
+
+
+git remote remove origin
+
+
+git remote set-url origin https://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@github.com/Surendar-Kuppusamy/MERN
+git config --global user.name "Surendar Kuppusamy"
+git config --global user.email "surendar021094@gmail.com"
+git remote set-url origin https://github.com/Surendar-Kuppusamy/MERN.git
+git remote set-url origin git@github.com:Surendar-Kuppusamy/MERN.git
+git remote add origin git@github.com:Surendar-Kuppusamy/MERN.git
+
+
+###########################################################################################################################################
+
+For adding particular folder:
+git add foldername
+git commit -m "commit operation"
+
+
+*) Creating a new repository via website.
+*) Open Bash on local project location.
+*) Add the file to the new local repository.[git add .]
+*) Use "git status" in your bash to view all the files which are going to be staged to the first commit.
+*) Commit the files staged in your local repository by writing a commit message.[git commit -m 'your message']
+*) You can create a commit message by "git commit -m 'your message'", which adds the change to the local repository.
+*) "git commit" uses '-m' as a flag for a message to set the commits with the content where the full description is included, and a message is written in an imperative sentence up to 50 characters long and defining "what was changed", and "why was the change made".
+*) Copy your remote repository's URL from GitHub.
+*) The HTTPS or URL is copied from the given GitHub account, which is the place of the remote repository.
+*) Add the URL copied, which is your remote repository to where your local content from your repository is pushed.
+ [git remote add origin 'your_url_name']
+*) In the above code, The 'origin' is the remote name, and the remote URL is "https://github.com/Olivia-Smithcoder100/FaceDetection.git". You can see the remote as GitHub in this case, and GitHub provides the URL for adding to the remote repository.
+*) Push the code in your local repository to GitHub
+*) "git push -u origin master" is used for pushing local content to GitHub.
+*) In the code, the origin is your default remote repository name and '-u' flag is upstream, which is equivalent to '-set-upstream.' and the master is the branch, name.upstream is the repository that we have cloned the project.
+*) Fill in your GitHub username and password.
+*) View your files in your repository hosted on GitHub.
+
+Steps:
+*) git add .
+*) git status
+*) git commit -m 'your message'
+*) git remote add origin 'https://github.com/Surendar-Kuppusamy/PondyTolet.git'	//https://github.com/Surendar-Kuppusamy/Learning.git
+*) git push -u origin master

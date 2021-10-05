@@ -1,0 +1,1662 @@
+https://github.com/bradtraversy/proshop_mern
+https://www.encodedna.com/2012/12/javaScript-accept-only-numbers-textbox.htm    -- Check only numbers
+https://www.edureka.co/blog/javascript-email-validation/        --    Validate email
+https://redux.js.org/usage/troubleshooting        --    Redux errors notes
+https://stackoverflow.com/questions/38563679/react-redux-dispatch-action-on-app-load-init#answer-44478992        --  It may be usefull to solve dispatch issue
+https://www.datacamp.com/community/tutorials/git-push-pull    -- Github tutorial
+https://www.geeksforgeeks.org/how-to-use-an-es6-import-in-node-js/    -- Notejs
+https://expressjs.com/en/starter/examples.html    -- Imported tutorial page for express
+https://www.npmjs.com/package/react-social-login    -- Social Login
+https://stackabuse.com/form-data-validation-in-nodejs-with-express-validator/#schemavalidationwithexpressvalidator    [For express validation]
+https://stackoverflow.com/questions/49445930/schema-validations-using-express-validator-how-to-set-custom-error-message    --    Custom validator error message
+Refer this link for custom validation on express validator's schema https://github.com/express-validator/express-validator/issues/700#issuecomment-494669026
+https://github.com/express-validator/express-validator/issues/527#issuecomment-401228097
+https://express-validator.github.io/docs/validation-result-api.html#withdefaultsoptions    --For error handling on validation
+https://code.visualstudio.com/docs/getstarted/settings    --    For visual studio code editor options.
+https://www.tabnine.com/code/javascript/functions/express-validator/checkSchema    --    checkSchema example
+
+
+indexOf()    //Get first occurence position of given element on string or array
+let arr = ["2", "2"];
+let str = "Hello world, welcome to the universe.";
+arr.indexOf("2")    //Returns => 0
+str.indexOf("world")    //Returns => 6
+str.indexOf("not found")    //Returns => -1
+
+lastIndexOf()    //Method returns the last index (position) of a specified value
+const fruits = ["Apple", "Orange", "Apple", "Mango"];
+fruits.lastIndexOf("Apple")   // Returns 2
+
+length()    //Return the length of string or array
+let str = "Hello World!";
+str.length   // Returns => 12
+arr.length    //    Return => 2
+
+trim()    //Remove the extra space
+let str = "       Hello World!        ";
+str.trim()   // Returns => "Hello World!"
+
+valueOf()    //Returns the value of string or array
+let arr = ["one", "two"];
+let str = "Hello World!";
+arr.valueOf();    //Returns => one,two
+arr.valueOf();    //Returns => Hello World!
+
+charAt()    //Method returns the character at a specified index in a string.
+let str = "HELLO WORLD";
+str.charAt(0)    // Returns => "H"
+
+concat() //method joins two or more strings and does not change the existing strings, but returns a new string.s
+let str1 = "Hello ";
+let str2 = "world!";
+let res = str1.concat(str2);    //Returns => Hello world!
+let arr1 = ['One'];
+let arr2 = ['Two'];
+arr1.concat(arr2);        //Returns => One,Two
+
+isArray()    //Check its array
+const fruits = ["Banana", "Orange", "Apple", "Mango"];
+Array.isArray(fruits)   //Returns => true
+
+map() //Method creates a new array from the results of calling a function for every element
+const arr = [4, 9, 16, 25];
+arr.map((value, index) => {
+    console.log(value, index)
+});
+
+toString() //Method returns a string with all array values separated by commas
+const fruits = ["Banana", "Orange", "Apple", "Mango"];
+let text = fruits.toString();    //Return => Banana,Orange,Apple,Mango
+
+sort()        //Sort in alphabetical orders
+reverse()    //Sort in reverse order of alphabetical orders
+const fruits = ["Banana", "Orange", "Apple", "Mango"];    
+fruits.sort();    //Returns => Apple,Banana,Mango,Orange
+fruits.reverse();    //Returns => Orange,Mango,Banana,Apple
+
+push() //It push the element to the last of array
+const fruits = ["Banana", "Orange", "Apple", "Mango"];
+fruits.push("Kiwi");    //["Banana", "Orange", "Apple", "Mango", "Kiwi"]
+
+unshift() //Add new items to the beginning of an array:
+const fruits = ["Banana", "Orange", "Apple", "Mango"];
+fruits.unshift("Lemon","Pineapple");    //Returns => ["Lemon", "Pineapple", "Banana", "Orange", "Apple", "Mango"]
+
+pop() //It remove the last element of array
+const fruits = ["Banana", "Orange", "Apple", "Mango"];
+fruits.pop();   // Removes ["Banana", "Orange", "Apple"]
+
+shift() //Remove the first item of an array:
+fruits.shift();["Orange", "Apple", "Mango"]
+
+slice() //Method returns selected elements in an array, as a new array.
+const fruits = ["Banana", "Orange", "Lemon", "Apple", "Mango"];
+const citrus = fruits.slice(1, 3);    //Returns => ["Orange", "Lemon"]
+array.slice(start, end)
+
+Parameter         Description
+
+start             Optional. An integer that specifies where to start the selection (The first element has an index of 0). Use negative numbers to select from the end of an array. If omitted, it acts like "0"
+
+end             Optional. An integer that specifies where to end the selection. If omitted, all elements from the start position and to the end of the array will be selected. Use negative numbers to select from the end of an array
+
+splice() //Method adds and/or removes array elements.
+splice() overwrites the original array.
+
+const fruits = ["Banana", "Orange", "Apple", "Mango"];
+// At position 2, add 2 elements:
+fruits.splice(2, 0, "Lemon", "Kiwi");    //Returns => ["Banana", "Orange", "Lemon", "Kiwi", "Apple", "Mango"]
+fruits.splice(2, 2);    //Returns => ["Banana", "Orange", "Apple", "Mango"]    //In which it removes two element mentioned at end value
+array.splice(index, howmany, item1, ....., itemX)
+Parameter             Description
+index                 Required. The position to add/remove items. Negative values a the position from the end of the array.
+howmany             Optional. Number of items to be removed.
+item1, ..., itemX     Optional. New elements(s) to be added
+
+
+join() //Convert the elements of an array into a string:
+array.join(separator)
+const fruits = ["Banana", "Orange", "Apple", "Mango"];
+fruits.join("#")   // Returns => "Banana#Orange#Apple#Mango"
+
+
+split()    //
+let str = "How are you doing today?";
+const myArr = str.split(" ");
+
+includes() //Method returns true if an array contains a specified element, otherwise false. includes() is case sensitive.
+const fruits = ["Banana", "Orange", "Apple", "Mango"];
+fruits.includes("Mango")   //Returns => true
+
+Date:
+
+new Date()    //Current date
+var d = new Date(year, month, day, hours, minutes, seconds, milliseconds);
+ 
+getDate()     Returns the day of the month (from 1-31)
+getDay()     Returns the day of the week (from 0-6)
+getFullYear()     Returns the year
+getHours()     Returns the hour (from 0-23)
+getMilliseconds()     Returns the milliseconds (from 0-999)
+getMinutes()     Returns the minutes (from 0-59)
+getMonth()     Returns the month (from 0-11)
+getSeconds()     Returns the seconds (from 0-59)
+getTime()     Returns the number of milliseconds since midnight Jan 1 1970, and a specified date
+getTimezoneOffset()     Returns the time difference between UTC time and local time, in minutes
+
+var d = new Date();
+var n = d.toDateString();    //Returns  => Tue Sep 07 2021
+
+//valueOf() method returns the primitive value of a Date object.
+var d = new Date();
+var n = d.valueOf();    //Returns => 1631011342204
+
+console.log("1) "+  new Date().toDateString());
+console.log("2) "+  new Date().toISOString());
+console.log("3) "+  new Date().toJSON());
+console.log("4) "+  new Date().toLocaleDateString());
+console.log("5) "+  new Date().toLocaleString());
+console.log("6) "+  new Date().toLocaleTimeString());
+console.log("7) "+  new Date().toString());
+console.log("8) "+  new Date().toISOString().slice(0,10));
+1) Mon Sep 13 2021
+2) 2021-09-13T10:57:39.347Z
+3) 2021-09-13T10:57:39.348Z
+4) 13/9/2021
+5) 13/9/2021, 4:27:39 pm
+6) 4:27:39 pm
+7) Mon Sep 13 2021 16:27:39 GMT+0530 (India Standard Time)
+8) 2021-09-13
+
+
+Set Date Methods
+Set Date methods are used for setting a part of a date:
+
+Method                 Description
+
+setDate()             Set the day as a number (1-31)
+setFullYear()         Set the year (optionally month and day)
+setHours()             Set the hour (0-23)
+setMilliseconds()     Set the milliseconds (0-999)
+setMinutes()         Set the minutes (0-59)
+setMonth()             Set the month (0-11)
+setSeconds()         Set the seconds (0-59)
+setTime()             Set the time (milliseconds since January 1, 1970)
+
+const d = new Date();
+d.setDate(d.getDate() + 50);    //Returns => Tue Nov 02 2021 15:50:43 GMT+0530 (India Standard Time)
+
+const d = new Date();
+d.setFullYear(2020, 11, 3);        //Returns => Thu Dec 03 2020 15:51:11 GMT+0530 (India Standard Time)
+
+Math.round(x) returns the nearest integer:
+
+Math.round(4.9);    // returns 5
+Math.round(4.7);    // returns 5
+Math.round(4.4);    // returns 4
+Math.round(4.2);    // returns 4
+Math.round(-4.2);    // returns -4
+
+Math.ceil(x) returns the value of x rounded up to its nearest integer:
+
+Math.ceil(4.9);     // returns 5
+Math.ceil(4.7);     // returns 5
+Math.ceil(4.4);     // returns 5
+Math.ceil(4.2);     // returns 5
+Math.ceil(-4.2);     // returns -4
+
+Math.floor(x) returns the value of x rounded down to its nearest integer:
+
+Math.floor(4.9);    // returns 4
+Math.floor(4.7);    // returns 4
+Math.floor(4.4);    // returns 4
+Math.floor(4.2);    // returns 4
+Math.floor(-4.2);    // returns -5
+
+Math.pow(x, y) returns the value of x to the power of y:
+
+Math.pow(8, 2);      // returns 64
+
+Math.sqrt(x) returns the square root of x:
+
+Math.sqrt(64);      // returns 8
+
+Math.abs(x) returns the absolute (positive) value of x:
+
+Math.abs(-4.7);     // returns 4.7
+
+Math.random() returns a random number between 0 (inclusive),  and 1 (exclusive):
+
+// Returns a random number:
+Math.random();
+
+// Returns a random integer from 1 to 100:
+Math.floor(Math.random() * 100) + 1;
+
+
+The switch statement is used to perform different actions based on different conditions.
+
+switch(expression) {
+  case x:
+    // code block
+    break;
+  case y:
+    // code block
+    break;
+  default:
+    // code block
+}
+
+Example:
+--------
+switch (new Date().getDay()) {
+  case 6:
+    text = "Today is Saturday";
+    break;
+  case 0:
+    text = "Today is Sunday";
+    break;
+  default:
+    text = "Looking forward to the Weekend";
+}
+
+
+The JavaScript for in statement loops through the properties of an Object:
+const person = {fname:"John", lname:"Doe", age:25};
+let txt = "";
+for (let x in person) {
+  txt += person[x] + " ";    Returns => John Doe 25
+}
+
+
+for (let i = 0; i < 10; i++) {
+  if (i === 3) {
+    break;    //Skip the loop once, when this condition satisfied.
+  }
+  text += "The number is " + i + "<br>";
+}
+
+
+typeof "John"                 // Returns "string"
+typeof 3.14                   // Returns "number"
+typeof NaN                    // Returns "number"
+typeof false                  // Returns "boolean"
+typeof [1,2,3,4]              // Returns "object"
+typeof {name:'John', age:34}  // Returns "object"
+typeof new Date()             // Returns "object"
+typeof function () {}         // Returns "function"
+typeof myCar                  // Returns "undefined" *
+typeof null                   // Returns "object"
+
+
+The global method Number() can convert strings to numbers.
+Anything else converts to NaN (Not a Number).
+
+Number("3.14")    // returns 3.14
+
+// returns a string from a number variable x
+String(123)       // returns a string from a number literal "123"
+
+
+Refrence Link for Regex: https://www.w3schools.com/js/js_regexp.asp, https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
+In JavaScript, regular expressions are often used with the two string methods: search() and replace().
+
+The search() method uses an expression to search for a match, and returns the position of the match.
+
+The replace() method returns a modified string where the pattern is replaced.
+
+let text = "Visit W3Schools!";
+let n = text.search("W3Schools");    Returns => 6
+
+let text = "Visit Microsoft!";
+let result = text.replace(/microsoft/i, "W3Schools");    Returns => Visit W3Schools!
+
+const pattern = /e/;
+pattern.test("The best things in life are free!");    Returns => true
+
+
+The try statement lets you test a block of code for errors.
+
+The catch statement lets you handle the error.
+
+The throw statement lets you create custom errors.
+
+The finally statement lets you execute code, after try and catch, regardless of the result.
+
+try {
+  Block of code to try
+}
+catch(err) {
+  Block of code to handle errors
+}
+finally {
+  Block of code to be executed regardless of the try / catch result
+}
+
+Example:
+--------
+try {
+    if(x == "") throw "is empty";
+    if(isNaN(x)) throw "is not a number";
+    x = Number(x);
+    if(x > 10) throw "is too high";
+    if(x < 5) throw "is too low";
+  }
+  catch(err) {
+    message.innerHTML = "Error: " + err + ".";
+  }
+  finally {
+    document.getElementById("demo").value = "";
+  }
+}
+
+instanceof:
+-----------
+The instanceof operator in JavaScript is used to check the type of an object at run time. It returns a boolean value if true then it indicates that the object is an instance of a particular class and if false then it is not.
+
+Example:
+--------
+var arr = ["Geeks", "for", "Geeks"];   
+document.getElementById("GFG").innerHTML = (arr instanceof Array) + "<br>" + (arr instanceof Number);
+Result:
+-------
+true
+false
+
+Error Name        Description
+
+EvalError        An error has occurred in the eval() function
+RangeError        A number "out of range" has occurred
+ReferenceError    An illegal reference has occurred    //variable that has not been declared:
+SyntaxError        A syntax error has occurred    //eval("alert('Hello)");   // Missing ' will produce an error
+TypeError        A type error has occurred    //num.toUpperCase();   // You cannot convert a number to upper case
+URIError        An error in encodeURI() has occurred    //decodeURI("%%%");   // You cannot URI decode percent signs
+
+const person = {
+  firstName: "John",
+  lastName : "Doe",
+  id       : 5566,
+  fullName : function() {
+    return this.firstName + " " + this.lastName;
+  }
+};
+
+
+class Car {
+  constructor(name, year) {
+    this.name = name;
+    this.year = year;
+  }
+  age() {
+    let date = new Date();
+    return date.getFullYear() - this.year;
+  }
+}
+let myCar = new Car("Ford", 2014);
+document.getElementById("demo").innerHTML =
+"My car is " + myCar.age() + " years old.";
+
+
+class Car {
+  constructor(brand) {
+    this.carname = brand;
+  }
+  present() {
+    return 'I have a ' + this.carname;
+  }
+}
+
+class Model extends Car {
+  constructor(brand, mod) {
+    super(brand);    //It must be similar to parent class
+    this.model = mod;
+  }
+  show() {
+    return this.present() + ', it is a ' + this.model;
+  }
+}
+let myCar = new Model("Ford", "Mustang");
+document.getElementById("demo").innerHTML = myCar.show();
+
+The super() method refers to the parent class.
+By calling the super() method in the constructor method, we call the parent's constructor method and gets access to the parent's properties and methods.
+
+What is JSON?
+    JSON stands for JavaScript Object Notation
+    JSON is a lightweight data interchange format
+    JSON is language independent *
+    JSON is "self-describing" and easy to understand
+
+
+Refrence Link for DOM access: https://www.w3schools.com/js/js_htmldom_document.asp
+
+Finding HTML Elements
+
+Method                                     Description
+document.getElementById(id)             Find an element by element id
+document.getElementsByTagName(name)     Find elements by tag name
+document.getElementsByClassName(name)     Find elements by class name
+
+Adding and Deleting Elements
+
+Method                                 Description
+document.createElement(element)     Create an HTML element
+document.removeChild(element)         Remove an HTML element
+document.appendChild(element)         Add an HTML element
+document.replaceChild(new, old)     Replace an HTML element
+document.write(text)                 Write into the HTML output stream
+
+const obj = { a: 5, b: 7, c: 9 };
+Object.entries(obj).forEach(([key, value]) => {
+  console.log(`${key} ${value}`); // "a 5", "b 7", "c 9"
+});
+
+//make array in reverse order
+Object.entries(value).reverse().forEach(([subkey, subvalue]) => {
+	errorMessage = subvalue.message;
+});
+
+//For stop iterations.
+Object.entries(value).reverse().every(([subkey, subvalue]) => {
+	errorMessage = subvalue.message;
+	if(errorMessage != 'Something went wrong') {
+		return false;
+	}
+});
+
+<input type="text" id="tbNumbers" value="" onkeypress="javascript:return isNumber(event)" />
+function isNumber(evt) {
+    var iKeyCode = (evt.which) ? evt.which : evt.keyCode
+    if (iKeyCode != 46 && iKeyCode > 31 && (iKeyCode < 48 || iKeyCode > 57))
+        return false;
+        
+    return true;
+}
+
+function ValidateEmail(inputText) {
+    var mailformat = /^w+([.-]?w+)*@w+([.-]?w+)*(.w{2,3})+$/;
+    if(inputText.value.match(mailformat)) {
+        alert("You have entered a valid email address!");    //The pop up alert for a valid email address
+        document.form1.text1.focus();
+        return true;
+    } else {
+        alert("You have entered an invalid email address!");    //The pop up alert for an invalid email address
+        document.form1.text1.focus();
+        return false;
+    }
+}
+     
+
+\w    Matches any alphanumeric character from the basic Latin alphabet, including the underscore. Equivalent to [A-Za-z0-9_]. For example, /\w/ matches "a" in "apple", "5" in "$5.28", "3" in "3D" and "m" in "Émanuel".
+
+Name: <input type="text" id="txtName"/>
+<br/>
+<br/>
+<input type="button" value="Submit" onclick="Validate()"/>
+<script type="text/javascript">
+    function Validate() {
+        //Regex for Valid Characters i.e. Alphabets, Numbers and Space.
+        var regex = /^[A-Za-z0-9 ]+$/
+ 
+        //Validate TextBox value against the Regex.
+        var isValid = regex.test(document.getElementById("txtName").value);
+        if (!isValid) {
+            alert("Contains Special Characters.");
+        } else {
+            alert("Does not contain Special Characters.");
+        }
+ 
+        return isValid;
+    }
+</script>
+
+
+var limits = { fileSize: 1 * 1024 * 1024 }    //1MB
+
+if(!file.originalname.match(/\.(jpg|JPG|jpeg|JPEG|png|PNG|gif|GIF)$/)) {
+    req.fileValidationError = 'Only image files are allowed!';
+    cb('Only image files are allowed!', false);
+}
+
+
+
+
+
+*) In redux, get state value using "useSelector", because if state value is changed on reducer using dispatch, then getted value also upaded.
+*) In redux, mapStateProps is get current value of state, which is not update value if state is changed.
+*) When state or redux state value is changed then react re-render its component page, so don't dispatch anything on functional components on open, instead use "useEffect", because when dispatch will change state value and once again component reload and again dispatch the state or action.
+
+*) Creating a new repository via website.
+*) Open Bash on local project location.
+*) Add the file to the new local repository.[git add .]
+*) Use "git status" in your bash to view all the files which are going to be staged to the first commit.
+*) Commit the files staged in your local repository by writing a commit message.[git commit -m 'your message']
+*) You can create a commit message by "git commit -m 'your message'", which adds the change to the local repository.
+*) "git commit" uses '-m' as a flag for a message to set the commits with the content where the full description is included, and a message is written in an imperative sentence up to 50 characters long and defining "what was changed", and "why was the change made".
+*) Copy your remote repository's URL from GitHub.
+*) The HTTPS or URL is copied from the given GitHub account, which is the place of the remote repository.
+*) Add the URL copied, which is your remote repository to where your local content from your repository is pushed.
+ [git remote add origin 'your_url_name']
+*) In the above code, The 'origin' is the remote name, and the remote URL is "https://github.com/Olivia-Smithcoder100/FaceDetection.git". You can see the remote as GitHub in this case, and GitHub provides the URL for adding to the remote repository.
+*) Push the code in your local repository to GitHub
+*) "git push -u origin master" is used for pushing local content to GitHub.
+*) In the code, the origin is your default remote repository name and '-u' flag is upstream, which is equivalent to '-set-upstream.' and the master is the branch, name.upstream is the repository that we have cloned the project.
+*) Fill in your GitHub username and password.
+*) View your files in your repository hosted on GitHub.
+
+Make available "Import" on node js:
+-----------------------------------
+
+*) The import statement is used to import modules that are exported by some other module. A module is a file that contains a piece of reusable code. The import modules are in strict mode whether it is declared or not.
+
+Node js doesn’t support ES6 import directly. If we try to use import for importing modules directly in node js it will throw out the error.
+
+Node has experimental support for ES modules. To enable them we need to make some changes to the package.json file. Before following the steps make sure that Node is installed. Below are the steps to achieve the same.
+
+In the package.json file add “type” : “module”. Adding this enables ES6 modules.
+
+The package.json file should look like this:
+
+*) ES6 stands for ECMAScript 6. ECMAScript was created to standardize JavaScript, and ES6 is the 6th version of ECMAScript, it was published in 2015, and is also known as ECMAScript 2015
+
+*) React uses ES6, and you should be familiar with some of the new features like:
+    - Classes
+    - Arrow Functions
+    - Variables (let, const, var)
+
+
+So to recap, synchronous code is executed in sequence – each statement waits for the previous statement to finish before executing. Asynchronous code doesn't have to wait – your program can continue to run. You do this to keep your site or app responsive, reducing waiting time for the user. Thanks for reading.
+
+
+Error Handling:
+---------------
+*) "next()" it will pass to next middleware or route action, if we pass next(err), then express catch the error and stop execution
+*) On asynchronous code, express automatically catchs error and pass it to next(), we don't need to mention it.
+
+*) Error Handling refers to how Express catches and processes errors that occur both synchronously and asynchronously
+*) Express comes with a default error handler so you don’t need to write your own to get started.
+Catching Errors
+*) Errors that occur in synchronous code inside route handlers and middleware require no extra work.
+*) If synchronous code throws an error, then Express will catch and process it. For example:
+app.get('/', function (req, res) {
+  throw new Error('BROKEN') // Express will catch this on its own.
+})
+*) For errors returned from asynchronous functions invoked by route handlers and middleware, you must pass them to the next() function, where Express will catch and process them. For example:
+app.get('/', function (req, res, next) {
+  fs.readFile('/file-does-not-exist', function (err, data) {    //It is asynchronous function
+    if (err) {
+      next(err) // Pass errors to Express.
+    } else {
+      res.send(data)
+    }
+  })
+})
+
+*) Starting with Express 5, route handlers and middleware that return a Promise will call next(value) automatically when they reject or throw an error. For example:
+app.get('/user/:id', async function (req, res, next) {
+  var user = await getUserById(req.params.id)
+  res.send(user)
+})
+*) If you pass anything to the next() function (except the string 'route'), Express regards the current request as being an error and will skip any remaining non-error handling routing and middleware functions.
+*) If the callback in a sequence provides no data, only errors, you can simplify this code as follows:
+app.get('/', [
+  function (req, res, next) {
+    fs.writeFile('/inaccessible-path', 'data', next)
+  },
+  function (req, res) {
+    res.send('OK')
+  }
+])
+*) In the above example next is provided as the callback for fs.writeFile, which is called with or without errors. If there is no error the second handler is executed, otherwise Express catches and processes the error.
+*) You must catch errors that occur in asynchronous code invoked by route handlers or middleware and pass them to Express for processing. For example:
+app.get('/', function (req, res, next) {
+  setTimeout(function () {
+    try {
+      throw new Error('BROKEN')
+    } catch (err) {
+      next(err)
+    }
+  }, 100)
+})
+Writing error handlers:
+-----------------------
+Define error-handling middleware functions in the same way as other middleware functions, except error-handling functions have four arguments instead of three: (err, req, res, next). For example:
+app.use(function (err, req, res, next) {
+  console.error(err.stack)
+  res.status(500).send('Something broke!')
+})
+You define error-handling middleware last, after other app.use() and routes calls; for example:
+var bodyParser = require('body-parser')
+var methodOverride = require('method-override')
+
+app.use(bodyParser.urlencoded({
+  extended: true
+}))
+app.use(bodyParser.json())
+app.use(methodOverride())
+app.use(function (err, req, res, next) {
+  // logic
+})
+
+How do I handle 404 responses?:[Not Found URL]
+----------------------------------------------
+In Express, 404 responses are not the result of an error, so the error-handler middleware will not capture them. This behavior is because a 404 response simply indicates the absence of additional work to do; in other words, Express has executed all middleware functions and routes, and found that none of them responded. All you need to do is add a middleware function at the very bottom of the stack (below all other functions) to handle a 404 response:
+app.use(function (req, res, next) {
+  res.status(404).send("Sorry can't find that!")
+})
+How do I setup an error handler?
+--------------------------------
+You define error-handling middleware in the same way as other middleware, except with four arguments instead of three; specifically with the signature (err, req, res, next):
+app.use(function (err, req, res, next) {
+  console.error(err.stack)
+  res.status(500).send('Something broke!')
+})
+How do I render plain HTML?
+---------------------------
+You don’t! There’s no need to “render” HTML with the res.render() function. If you have a specific file, use the res.sendFile() function. If you are serving many assets from a directory, use the express.static() middleware function.
+
+router.route(path):
+-------------------
+Returns an instance of a single route which you can then use to handle HTTP verbs with optional middleware. Use router.route() to avoid duplicate route naming and thus typing errors.
+For one route, we can uptain various HTTP methods.
+Example:
+--------
+const router = express.Router()
+router
+  .route('/:id')
+  .delete(protect, admin, deleteUser)
+  .get(protect, admin, getUserById)
+  .put(protect, admin, updateUser)
+ 
+ 
+On call back functions, when you pass a function as an argument, remember not to use parenthesis.
+Example:
+--------
+function myDisplayer(some) {
+  document.getElementById("demo").innerHTML = some;
+}
+function myCalculator(num1, num2, myCallback) {
+  let sum = num1 + num2;
+  myCallback(sum);
+}
+myCalculator(5, 5, myDisplayer);
+-------------
+setTimeout(myFunction, 3000);
+
+function myFunction() {
+  document.getElementById("demo").innerHTML = "I love You !!";
+}
+
+
+Express Validators:
+-------------------
+*) express-validator is a set of express.js middlewares that wraps validator.js validator and sanitizer functions.
+*) Validation functions are in this express validators are all come from "validator.js"[Reference Link: https://github.com/validatorjs/validator.js#validators]
+Simple Example:
+---------------
+const { body, validationResult } = require('express-validator');
+app.post(
+  '/user',
+  // username must be an email
+  body('username').isEmail(),
+  // password must be at least 5 chars long
+  body('password').isLength({ min: 5 }),
+  (req, res) => {
+    // Finds the validation errors in this request and wraps them in an object with handy functions
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    User.create({
+      username: req.body.username,
+      password: req.body.password,
+    }).then(user => res.json(user));
+  },
+)
+Now, whenever a request that includes invalid username or password fields is submitted, your server will respond like this:
+{
+  "errors": [
+    {
+      "location": "body",
+      "msg": "Invalid value",
+      "param": "username"
+    }
+  ]
+}
+Sanitizers:
+-----------
+*) Sanitizers are used to trim and sanitize form values.
+Example:
+--------
+const express = require('express');
+const { body } = require('express-validator');
+const app = express();
+app.use(express.json());
+app.post(
+  '/comment',
+  body('email').isEmail().normalizeEmail(),    //here email is sanitized
+  body('text').not().isEmpty().trim().escape(),
+  body('notifyOnReply').toBoolean(),
+  (req, res) => {
+    // Handle the request somehow
+  },
+);
+custom validator:
+-----------------
+*) In which custom validator is also available with the method "custom(validator)"
+Example:
+--------
+const { body } = require('express-validator');
+app.post(
+  '/user',
+  body('email').custom(value => {
+    return User.findUserByEmail(value).then(user => {
+      if(user) {
+        return Promise.reject('E-mail already in use');
+      }
+    });
+  }),
+  (req, res) => {
+    // Handle the request
+  },
+);
+
+Custom Error Messages:
+----------------------
+*) Custom error message is delivered using below method.
+.withMessage(message)
+message: the error message to use for the previous validator
+Example:
+--------
+const { check } = require('express-validator');
+app.post(
+  '/user',
+  // ...some other validations...
+  check('password')
+    .isLength({ min: 5 })
+    .withMessage('must be at least 5 chars long')
+    .matches(/\d/)
+    .withMessage('must contain a number'),
+  (req, res) => {
+    // Handle the request somehow
+  },
+);
+*) If we didn't mention custom messages then it will send default error message.
+*) If you're using a custom validator, then it may very well throw or reject promises to indicate an invalid value or error message.
+Example:
+--------
+return Promise.reject('E-mail already in use');
+Complex errors:
+---------------
+If sometimes, we can't descripe error message in single string, so that we can also use object in it.
+Example:
+--------
+// check(field, withMessage) and .withMessage() work the same
+check('email').isEmail().withMessage({
+  message: 'Not an email',
+  errorCode: 1,
+})
+Dynamic messages:
+-----------------
+We can also create dynamic messages based on error values.
+This is specially useful if you use a translation library to provide tailored messages:
+Example:
+--------
+// check(field, withMessage) and .withMessage() work the same
+check('something').isInt().withMessage((value, { req, location, path }) => {
+  return req.translate('validation.message.path', { value, location, path });    //In which translate the message
+}),
+check('somethingElse', (value, { req, location, path }) => {
+  return req.translate('validation.message.path', { value, location, path });
+}),
+// oneOf is special though - it only receives the req object for now
+oneOf([someValidation, anotherValidation], ({ req }) => {
+  return req.translate('validation.multiple_failures');
+});
+Wildcards:
+----------
+Sometimes you will want to apply the same rules to all items of an array or all keys of some object. That's what the * character -- also known as a wildcard -- is for.
+Example:
+--------
+const express = require('express');
+const { check } = require('express-validator');
+const app = express();
+app.use(express.json());
+app.post(
+  '/addresses',
+  check('addresses.*.postalCode').isPostalCode(),
+  check('addresses.*.number').toInt(),
+  (req, res) => {
+    // Handle the request
+  },
+);
+This will handle cases where you send an array of addresses:
+{
+  "addresses": [
+    { "postalCode": "2010", "number": "500" },
+    { "postalCode": "", "number": "501" }
+  ]
+}
+...or even cases where you want a predefined set of addresses:
+{
+  "addresses": {
+    "home": { "postalCode": "", "number": "501" },
+    "work": { "postalCode": "2010", "number": "500" }
+  }
+}
+
+Schema Validation:
+------------------
+*) It is nothing but, build an object with form field as "keys" and validation as "values" and check it at "checkSchema()" method.
+*) Schemas are a special, object-based way of defining validations or sanitizations on requests.
+At the root-level, you specify field paths as keys, and objects as values -- which define the error messages, locations and validations/sanitizations.
+Reference Link: https://stackabuse.com/form-data-validation-in-nodejs-with-express-validator/#schemavalidationwithexpressvalidator
+Example:
+--------
+const { checkSchema } = require('express-validator');
+app.put(
+  '/user/:id/password',
+  checkSchema({
+    id: {
+      // The location of the field, can be one or more of body, cookies, headers, params or query.
+      // If omitted, all request locations will be checked
+      in: ['params', 'query'],
+      errorMessage: 'ID is wrong',
+      isInt: true,
+      // Sanitizers can go here as well
+      toInt: true,
+    },
+    myCustomField: {
+      // Custom validators
+      custom: {
+        options: (value, { req, location, path }) => {
+          return value + req.body.foo + location + path;
+        },
+      },
+      // and sanitizers
+      customSanitizer: {
+        options: (value, { req, location, path }) => {
+          let sanitizedValue;
+
+          if (req.body.foo && location && path) {
+            sanitizedValue = parseInt(value);
+          } else {
+            sanitizedValue = 0;
+          }
+
+          return sanitizedValue;
+        },
+      },
+    },
+    password: {
+      isLength: {
+        errorMessage: 'Password should be at least 7 chars long',
+        // Multiple options would be expressed as an array
+        options: { min: 7 },
+      },
+    },
+    firstName: {
+      isUppercase: {
+        // To negate a validator
+        negated: true,
+      },
+      rtrim: {
+        // Options as an array
+        options: [[' ', '-']],
+      },
+    },
+    // Support bail functionality in schemas
+    email: {
+      isEmail: {
+        bail: true,
+      },
+    },
+    // Wildcards/dots for nested fields work as well
+    'addresses.*.postalCode': {
+      // Make this field optional when undefined or null
+      optional: { options: { nullable: true } },
+      isPostalCode: true,
+    },
+  }),
+  (req, res, next) => {
+    // handle the request as usual
+  },
+);
+Whole Body Validation:
+----------------------
+Sometimes you need to validate a request whose body is a string, an array, or even a number! That's why you can omit the field to validate, and check req.body directly:
+*) Check type[array, object] of form values is comes.
+Example:    //This example is not more relevant to this.
+--------
+const bodyParser = require('body-parser');
+const express = require('express');
+const { body } = require('express-validator');
+
+const app = express();
+
+// Will handle text/plain requests
+app.use(bodyParser.text());
+
+app.post('/recover-password', body().isEmail(), (req, res) => {
+  // Assume the validity of the request was already checked
+  User.recoverPassword(req.body).then(() => {
+    res.send('Password recovered!');
+  });
+});
+Validation middlewares:
+-----------------------
+Creates a validation chain for one or more fields. They may be located in any of the following request objects:
+    req.body
+    req.cookies
+    req.headers
+    req.params
+    req.query
+    
+Syntax:
+-------
+body([fields, message])
+
+Same as check([fields, message]), but only checking req.body.
+cookie([fields, message])
+
+Same as check([fields, message]), but only checking req.cookies.
+header([fields, message])
+
+Same as check([fields, message]), but only checking req.headers.
+param([fields, message])
+
+Same as check([fields, message]), but only checking req.params.
+query([fields, message])
+
+Same as check([fields, message]), but only checking req.query.
+checkSchema(schema)
+
+Check For Additional Methods:
+-----------------------------
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+*) If some validation method is not found in "validation.js", then refer this below reference link, for additional methods
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+Reference Link:    https://express-validator.github.io/docs/validation-chain-api.html#additional-methods
+---------------
+
+.bail():
+--------
+If sometimes we need to check multiple validation for single fields, at that time use this method to check if first validation is failed then it skips next all validation for that fields.
+Example:
+--------
+app.post('/', [
+  check('username')
+    .isEmail()
+    .bail()
+    // If username is not an email, checkBlacklistedDomain will never run
+    .custom(checkBlacklistedDomain)
+    .bail()
+    // If username is not an email or has a blacklisted domain, checkEmailExists will never run
+    .custom(checkEmailExists);
+]);
+
+For replace form values, we can use this link, https://express-validator.github.io/docs/sanitization-chain-api.html#additional-methods
+
+.formatWith(formatter)
+*) Change error message form
+    formatter(error): the function to use to format when returning errors.
+   The error argument is an object in the format of { location, msg, param, value, nestedErrors }, as described above.
+Example:
+--------
+const { validationResult } = require('express-validator');
+app.post('/create-user', yourValidationChains, (req, res, next) => {
+  const errorFormatter = ({ location, msg, param, value, nestedErrors }) => {
+    // Build your resulting errors however you want! String, object, whatever - it works!
+    return `${location}[${param}]: ${msg}`;
+  };
+  const result = validationResult(req).formatWith(errorFormatter);
+  if (!result.isEmpty()) {
+    // Response will contain something like
+    // { errors: [ "body[password]: must be at least 10 chars long" ] }
+    return res.json({ errors: result.array() });
+  }
+
+  // Handle your request as if no errors happened
+});
+
+.mapped()
+---------
+    Returns: an object where the keys are the field names, and the values are the validation errors
+    Gets the first validation error of each failed field in the form of an object.
+
+validationResult(req):
+----------------------
+*) Extracts the validation errors from a request and makes them available in a Result object.
+*) Each error returned by .array() and .mapped() methods has the following format by default:
+{
+  "msg": "The error message",
+  "param": "param.name.with.index[0]",
+  "value": "param value",
+  // Location of the param that generated this error.
+  // It's either body, query, params, cookies or headers.
+  "location": "body",
+
+  // nestedErrors only exist when using the oneOf function
+  "nestedErrors": [{ ... }]
+}
+
+.isEmpty()
+----------
+    Returns: a boolean indicating whether this result object contains no errors at all.
+Example:
+--------
+app.post('/create-user', yourValidationChains, (req, res) => {
+  const result = validationResult(req);
+  const hasErrors = !result.isEmpty();
+  // do something if hasErrors is true
+});
+
+*) If we want to check one field values is set then check another field. For example, if we want to check "confirm password", first we need to check "password" is set. [Reference Link] => https://express-validator.github.io/docs/validation-chain-api.html#ifcondition
+
+
+Asset Form Validation:
+----------------------
+const assetSchema = {
+    type_of_asset: {
+        trim: true,
+        notEmpty: true,
+        isEmpty: false,
+        isString: true,
+        errorMessage: "Asset type is required."
+    },
+    asset_for: {
+        trim: true,
+        notEmpty: true,
+        isEmpty: false,
+        isString: true,
+        errorMessage: "Asset for is required."
+    },
+    asset_name: {
+        trim: true,
+        notEmpty: true,
+        isEmpty: false,
+        isString: true,
+        isLength: {
+            options: { min: 3 },
+            errorMessage: "Asset name must be minimum 3 characters."
+        },
+        isLength: {
+            options: { max: 50 },
+            errorMessage: "Asset name character must be less than 50 characters."
+        }
+    },
+    door_number: {
+        custom: {
+            options: (value, { req, location, path }) => {
+                if(req.body.type_of_asset != 'Land' && req.body.type_of_asset != 'Store' && req.body.type_of_asset  != 'Koddon') {
+                    if(value == 0) {
+                        return false;
+                    } if else(value < 1) {
+                        return false;
+                    } else {
+                        return false;
+                    }
+                }
+            }
+        }
+    },
+    address_hint: {
+        isString: true,
+        errorMessage: "Address hint type should be string."
+    },
+    street: {
+        isString: true,
+        errorMessage: "Street type should be string."
+    },
+    nagar: {
+        isString: true,
+        errorMessage: "Nagar type should be string."
+    },
+    city: {
+        isInt: {
+            options: { min: 1 },
+            errorMessage: "City is required."
+        }
+    },
+    state: {
+        isInt: {
+            options: { min: 1 },
+            errorMessage: "State is required."
+        }
+    },
+    pincode: {
+        isInt: {
+            options: { min: 6 },
+            errorMessage: "Invalid pincode."
+        }
+    },
+    landmark: {
+        isString: true,
+        errorMessage: "Landmark type should be string."
+    },
+    number_of_rooms: {
+        custom: {
+            options: (value, { req, location, path }) => {
+                if(req.body.type_of_asset == 'House' || req.body.type_of_asset == 'Appartment') {
+                    if(value == 0) {
+                        return false;
+                    } else if(value < 1) {
+                        return false;
+                    } else if(value > 20) {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                }
+            }
+        }
+    },
+    bhk: {
+        custom: {
+            options: (value, { req, location, path }) => {
+                if(req.body.type_of_asset == 'House' || req.body.type_of_asset == 'Appartment') {
+                    if(value == 0) {
+                        return false;
+                    } else if(value < 1) {
+                        return false;
+                    } else if(value > 20) {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                }
+            }
+        }
+    },
+    age_of_asset: {
+        custom: {
+            options: (value, { req, location, path }) => {
+                if(req.body.type_of_asset == 'House' || req.body.type_of_asset == 'Appartment') {
+                    if(value == 0) {
+                        return false;
+                    } else if(value < 1) {
+                        return false;
+                    } else if(value > 50) {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                }
+            }
+        }
+    },
+    age_of_asset_type: {
+        custom: {
+            options: (value, { req, location, path }) => {
+                if(req.body.type_of_asset != 'Land') {
+                    if(value == '') {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                }
+            }
+        }
+    },
+    asset_main_image: {
+        isArray: {
+            errorMessage: "Asset Image should be array."
+        }
+    },
+    asset_size_in_length_type: {
+        isString: true,
+        errorMessage: "Asset size type should be string."
+    },
+    asset_size_in_length: {
+        isNumeric: true,
+        errorMessage: "Asset size length type should be string."
+    },
+    asset_size_in_width_type: {
+        isString: true,
+        errorMessage: "Asset size type should be string."
+    },
+    asset_size_in_width: {
+        isNumeric: true,
+        errorMessage: "Asset size width type should be string."
+    },
+    asset_notes_by_owner: {
+        isString: true,
+        errorMessage: "Asset notes type should be string."
+    },
+    who_can_contact:
+        isArray: {
+            options: { min: 1 },
+            errorMessage: "Please choose who can contact you."
+        }
+    },
+    advance_amount_for_asset: {
+        custom: {
+            options: (value, { req, location, path }) => {
+                if(req.body.asset_for != 'Rent') {
+                    if(value == 0) {
+                        return false;
+                    } else if(value < 100) {
+                        return false;
+                    } else if(value > 500000) {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                }
+            }
+        }
+    },
+    monthly_rent_for_asset: {
+        custom: {
+            options: (value, { req, location, path }) => {
+                if(req.body.asset_for != 'Rent') {
+                    if(value == 0) {
+                        return false;
+                    } else if(value < 100) {
+                        return false;
+                    } else if(value > 500000) {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                }
+            }
+        }
+    },
+    lease_amount_for_asset: {
+        custom: {
+            options: (value, { req, location, path }) => {
+                if(req.body.asset_for != 'Lease') {
+                    if(value == 0) {
+                        return false;
+                    } else if(value < 100) {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                }
+            }
+        }
+    },
+    lease_period_for_asset: {
+        custom: {
+            options: (value, { req, location, path }) => {
+                if(req.body.asset_for != 'Lease') {
+                    if(value == 0) {
+                        return false;
+                    } else if(value < 1) {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                }
+            }
+        }
+    },
+    lease_period_for_asset_type: {
+        custom: {
+            options: (value, { req, location, path }) => {
+                if(req.body.asset_for != 'Lease') {
+                    if(value == '') {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                }
+            }
+        }
+    },
+    asset_price: {
+        custom: {
+            options: (value, { req, location, path }) => {
+                if(req.body.asset_for != 'Sale') {
+                    if(value == 0) {
+                        return false;
+                    } else if(value < 100) {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                }
+            }
+        }
+    },
+    asset_available_on_from: {
+        isDate: {
+            options: { format: 'YYYY-MM-DD' },
+            errorMessage: "Asset available date should be valid."
+        }
+    },
+    notice_period_for_vocate_asset: {
+        custom: {
+            options: (value, { req, location, path }) => {
+                if(req.body.asset_for != 'Rent') {
+                    if(value == 0) {
+                        return false;
+                    } else if(value < 1) {
+                        return false;
+                    } else if(!Number.isInteger(value)) {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                }
+            }
+        }
+    },
+    notice_period_for_vocate_asset_type: {
+        custom: {
+            options: (value, { req, location, path }) => {
+                if(req.body.asset_for != 'Rent') {
+                    if(value == '') {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                }
+            }
+        }
+    },
+    asset_status_now: {
+        isInt: {
+            options: { min: 1 },
+            errorMessage: "Asset state is required."
+        }
+    },
+    show_my_asset_for_tenants: {
+        trim: true,
+        notEmpty: true,
+        isEmpty: false,
+        isString: true,
+        errorMessage: "Show my asset for tenants is required."
+    },
+    'rooms.*.room_name': {
+        custom: {
+            options: (value, { req, location, path }) => {
+                if(req.body.type_of_asset == 'House' || req.body.type_of_asset == 'Appartment') {
+                    if(value == '') {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+}
+    
+    const userValidationSchema = {
+        first_name: {
+            trim: true,
+            isEmpty: {
+                options: {
+                    ignore_whitespace:true
+                },
+                errorMessage: "First name is required."
+            },
+            isAlphanumeric: {
+                errorMessage: "First name should be alpha numeric."
+            },
+            isLength: {
+                options: {
+                    min: 3,
+                    max: 50
+                },
+                errorMessage: "First name characters must be greater then 2 and less then 50"
+            }
+        },
+        last_name:
+            trim: true,
+            isEmpty: {
+                options: {
+                    ignore_whitespace:true
+                },
+                errorMessage: "Last name is required."
+            },
+            isAlphanumeric: {
+                errorMessage: "Last name should be alpha numeric."
+            },
+            isLength: {
+                options: {
+                    min: 3,
+                    max: 50
+                },
+                errorMessage: "Last name characters must be greater then 2 and less then 50"
+            }
+        },
+        email: {
+            trim: true,
+			isEmpty: {
+                options: {
+                    ignore_whitespace:true
+                },
+                errorMessage: "Email is required."
+            },
+            isEmail: {
+                errorMessage: "Invalid email address."
+            }/*,
+            custom: {
+                options: value => {
+                    return User.find({
+                        email: value
+                    }).then(user => {
+                        if (user.length > 0) {
+                            return Promise.reject('Email address already taken')
+                        }
+                    })
+                }
+            }*/
+        },
+        password: {
+            trim: true,
+            isEmpty: {
+                options: {
+                    ignore_whitespace:true
+                },
+                errorMessage: "Password is required."
+            },
+            isLength: {
+                options: {
+                    min: 6,
+                    max: 50
+                },
+                errorMessage: "Password characters must be greater then 6 and less then 50"
+            }
+        },
+        confirm_password: {
+            trim: true,
+            isEmpty: {
+                options: {
+                    ignore_whitespace:true
+                },
+                errorMessage: "Confirm Password is required."
+            },
+            isLength: {
+                options: {
+                    min: 6,
+                    max: 50
+                },
+                errorMessage: "Confirm Password characters must be greater then 6 and less then 50"
+            },
+            /*custom: {
+                options: (value, { req, location, path }) => {
+                    if(req.body.password != value) {
+                        return Promise.reject('Password and confirm password should be match');
+                    }
+                }
+            }*/
+        },
+        dob: {
+            trim: true,
+            isEmpty: {
+                options: {
+                    ignore_whitespace:true
+                },
+                errorMessage: "DOB is required."
+            },
+            isDate: {
+                options: { format: 'YYYY-MM-DD' },
+                errorMessage: "DOB date is invalid."
+            }
+            isBefore: {
+                date: new Date(),
+                errorMessage: "DOB date should not be current or future dates."
+            }
+        },
+        mobile_number: {
+            trim: true,
+            isNumeric: {
+				errorMessage: "Mobile number should be numeric."
+			},
+            isInt: {
+                options: {
+                    min: 10,
+                    max: 10,
+                    errorMessage: "Mobile number should be 10 digits."
+                }
+            }
+        },
+        std_code: {
+            trim: true,
+            isNumeric: {
+				errorMessage: "STD code number should be numeric."
+			},
+            isInt: {
+                options: {
+                    min: 3,
+                    max: 5,
+                    errorMessage: "STD code should be between 3 to 5 digits."
+                }
+            }
+        },
+        telephone_number: {
+            trim: true,
+            isNumeric: {
+				errorMessage: "Telephone number should be numeric."
+			},
+            isInt: {
+                options: {
+                    min: 6,
+                    max: 10,
+                    errorMessage: "Telephone number should be between 6 to 10 digits."
+                }
+            }
+        },
+        address: {
+            trim: true,
+            isEmpty: {
+                options: {
+                    ignore_whitespace:true
+                },
+                errorMessage: "Address is required."
+            },
+            isLength: {
+                options: { min: 30, max: 50000 },
+                errorMessage: 'Address should be at least 30 characters.'
+            }
+        },
+        user_type: {
+            trim: true,
+            isEmpty: {
+                options: {
+                    ignore_whitespace:true
+                },
+                errorMessage: "User type is required."
+            },
+            isNumeric: {
+				errorMessage: "User type should be numeric."
+			}
+        }
+    }
+    
+    
+    {
+  "msg": "The error message",
+  "param": "param.name.with.index[0]",
+  "value": "param value",
+  // Location of the param that generated this error.
+  // It's either body, query, params, cookies or headers.
+  "location": "body",
+
+  // nestedErrors only exist when using the oneOf function
+  "nestedErrors": [{ ... }]
+}
+    
+const { validationResult } = require('express-validator');
+
+const customValidationResult = validationResult.withDefaults({
+    formatter: error => {
+        return {
+            status: 'error',
+            message: error.msg
+        };
+    },
+});
+
+app.post('/create-user', yourValidationChains, (req, res) => {
+  // errors will be like [{ myLocation: 'body' }, { myLocation: 'query' }], etc
+  const errors = customValidationResult(req).array();
+});
+    
+
+        first_name: Yup.string()
+            .max(50, 'First name must be 50 characters or less')
+            .required('First name is required'),
+        last_name: Yup.string()
+            .max(50, 'Last name must be 50 characters or less')
+            .required('Last name is required'),
+        email: Yup.string()
+            .email('Invalid email address')
+            .required('Email required'),
+        password: Yup.string()
+            .required('Password is required'),
+        confirm_password:Yup.string()
+            .required('Confirm password is required')
+            .oneOf([Yup.ref('password'), null], 'Passwords must match'),
+        dob: Yup.date('DOB is date'),
+        mobile_number: Yup.string().matches(/^\d{10}$/, 'Invalid mobile number')
+            .min(10, 'Invalid mobile number')
+            .max(10,'Invalid mobile number')
+            .required('Mobile number is required'),
+        std_code:Yup.string().matches(/^\d{4}$/, 'Invalid STD code')
+            .min(3, 'Invalid STD code')
+            .max(4,'Invalid STD code'),
+        phone_number: Yup.string().matches(/^\d{4}$/, 'Invalid telephone number')
+            .min(3, 'Invalid telephone number')
+            .max(4,'Invalid telephone number'),
+        telephone_number: Yup.number(),
+        address: Yup.string()
+            .required('Address is required'),
+        user_type:Yup.number()
+            .required('User type is required'),
+
+*) Redux Thunk is a middleware that allows you to call the action creators that return a function(thunk) which takes the store's dispatch method as the argument and which is afterwards used to dispatch the synchronous action after the API or side effects has been finished.
+
+
+Mongodb Commands:
+-----------------
+
+Reference Link: https://docs.mongodb.com/manual/reference/mongo-shell/
+-----------------------------------------------------------------------
+
+Help Methods and Commands        Description
+
+help                            Show help.
+db.help()                        Show help for database methods.
+db.<collection>.help()            Show help on collection methods. The <collection> can be the name of an existing collection or a
+                                non-existing collection.
+show dbs                        Print a list of all databases on the server.
+use <db>                        Switch current database to <db>. The mongo shell variable db is set to the current database.
+show collections                Print a list of all collections for current database.
+show users                        Print a list of users for current database.
+show roles                        Print a list of all roles, both user-defined and built-in, for the current database.
+show profile                    Print the five most recent operations that took 1 millisecond or more. See documentation on the database
+                                profiler for more information.
+show databases                    Print a list of all available databases.
+
+
+Mongodb Installation Process:
+---------------------
+Reference Link:    https://medium.com/@LondonAppBrewery/how-to-download-install-mongodb-on-windows-4ee4b3493514
+---------------
