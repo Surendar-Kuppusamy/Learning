@@ -1,0 +1,777 @@
+Laravel:
+--------
+
+*) Command to install new Project
+php composer.phar create-project laravel/laravel demo
+
+Providers:
+----------
+
+	All default options are changed by the providers files, in providers folders.
+
+
+Route:
+------
+
+	We can use two files "web.php" and "api.php", mostly "api.php" is used for RESTful API's. Note that "session" and "crf tokens" is works only for "web.php". Note that "token" is works only for "api.php" and "session" is not works for "api.php".
+	
+	For "web.php":
+	
+		*) By default sending post request(via "web.php") then it returns 419 and page expired, it is because need to verify crf token from form. So, for skip this error, just add url in on "VerifyCsrfToken.php" at protected "$except = ['http://localhost/Server/Laravel/{{folderName}}/public/*']'";
+		
+	For "api.php"
+	
+		*) By default using api.php routes, it doesn't works, because we need to add "api" on route. Just avoid it by adding "api" before every route. For example "http://localhost/Server/Laravel/demo/public/api/post"
+		
+	We can make default changes on routes by using "RouterProviders.php", modify the file and we can make default changes.
+	
+Demo Code:
+----------
+	
+	Route::get('/', function () {
+		return view('welcome');
+	});
+
+	Route::get('/login', function(Request $request) {
+		return 'Login API';
+	});
+
+	Route::post('/signup', [UsersController::class]);
+
+	Route::get('/email', [UsersController::class, 'demoform']);
+
+
+Migration:
+----------
+
+******** Mostly don't use it  ********
+
+*) Create new table command
+php artisan make:migration users
+
+******** Mostly don't use it  ********
+
+*) Create new table command
+Create file manually and then run command
+php artisan migrate
+
+
+*) Create Table and if you want to spcefic path then use --path
+php artisan make:migration users_table --path[=PATH]
+
+public function up()
+    {
+        Schema::create('users', function(Blueprint $table) {
+            $table->id();
+            $table->string('name', 100);
+            $table->text('address')->nullable();
+            $table->string('email', 100);
+            $table->string('password', 100);
+            $table->dateTime('email_verified')->nullable();
+            $table->dateTime('created_on')->nullable();
+            $table->dateTime('updated_on')->nullable();
+        });
+    }
+	
+public function down()
+    {
+        Schema::dropIfExists('users');
+    }
+
+
+For adding Foreign key using modifying existing table:
+------------------------------------------------------
+
+public function up() {
+	Schema::table('products', function (Blueprint $table) {
+		$table->foreign('tax_id')->references('id')->on('tax')->onDelete('cascade');
+	});
+}
+public function down() {
+	Schema::table('products', function (Blueprint $table) {
+		$table->dropForeign(['tax_id']);
+	});
+}
+
+For adding time:
+----------------
+'created_on' => Carbon::today()->subDays(rand(0, 365)),
+'updated_on' => Carbon::today()->subDays(rand(0, 100))
+
+*) All migration in one file
+php artisan schema:dump --prune
+
+*) Rollback to last migration
+php artisan migrate:rollback
+
+*) Rollback to last 5 migrations
+php artisan migrate:rollback --step=5
+
+*) Roll back all migration
+php artisan migrate:reset
+
+*) Re-creates all the migration
+php artisan migrate:refresh
+
+
+Completely Delete Migrations Files:
+-----------------------------------
+https://stackoverflow.com/questions/16871413/safely-remove-migration-in-laravel
+
+    Manually delete the migration file under app/database/migrations/my_migration_file_name.php
+    Reset the composer autoload files: composer dump-autoload
+    Modify your database: Remove the last entry from the migrations table
+
+Modify Table:
+-------------
+For Modify execute code,
+
+php artisan make:migration modify_table --table=table_name
+Add you want on newly created file and don't forgot to reverse the command on down method on modified file [When try to mdify attributes of column then you must use change() methos at the end]
+php artisan migrate
+
+*) Finally all migration is completed then, you can convert all migration file in one file. It is not must.
+php artisan schema:dump --prune
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Make Controller:
+----------------
+
+php artisan make:controller PhotoController
+
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+*) By default sending post request then it returns 419 and page expired, it is because need to verify crf token from form. So, for skip this error, just add url in on "VerifyCsrfToken.php" at protected "$except = ['http://localhost/Server/Laravel/demo/public/*']'";
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+*) To check the route list use command,
+php artisan route:list
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+*) By default using api.php routes, it doesn't works, because we need to add "api" on route. Just avoid it by adding "api" before every route. For example "http://localhost/Server/Laravel/demo/public/api/post"
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+*) Route::middleware('auth:api')
+It specify the file 
+
+
+Model:
+------
+
+*) To generate model, by this command,
+php artisan make:model Users
+
+*) While generate models then define a table name, if not then it takes default table name by model class name with adding "s" on it. Don't forgot to add below codes, "$fillable" variable is used to insert the columns and "$guarded" make this is empty, while you insert bulk data.
+
+    protected $table='users';
+    const CREATED_AT = 'created_on';
+    const UPDATED_AT = 'updated_on';
+    protected $fillable = [
+        'address', 'email', 'password', 'email_verified', 'created_on', 'updated_on'
+    ];
+	public $timestamps = false;	//If you do not want to add columns 'created_at' and 'updated_at' in your tables then add this code on models.
+	
+	
+	For insert:
+	-----------
+	
+	In controller,
+	
+	public function addDemoForm(Request $request) {
+        $data = $request->all();
+        $demo = Demoform::create($data);
+        if($demo->wasChanged()) {
+            return ['status' => 'failed', 'message' => 'Inserted failed'];
+        } else {
+			// Please return error message, refer "Exception Handling" on this notes.
+            return ['status' => 'success', 'message' => 'Something went wrong'];
+        }
+    }
+	
+
+*) To generate seeder, by this command,
+php artisan make:seeder UsersSeeder
+It is used to insert dummy data in tables.
+
+	public function run()
+        Users::factory()
+            ->count(30)
+            ->create();
+	}
+
+*) To generate factory, by this command,
+php artisan make:factory UsersFactory
+It is used to insert dummy data in tables.
+
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Facades\Hash;
+use Carbon\Carbon;
+
+public function definition()
+    {
+        return [
+            'name' => $this->faker->name,
+            'email' => $this->faker->unique()->safeEmail,
+            'address' => $this->faker->name,
+            'password' => Hash::make('password'),
+            'created_on' => Carbon::today()->subDays(rand(0, 365)),
+            'updated_on' => Carbon::today()->subDays(rand(0, 100))
+        ];
+    }
+
+
+To execute, run the command,
+php artisan db:seed --class=UserSeeder
+
+For insert dummy data you need to follow few steps,
+	-> Generate Seeder on table name and config data on it for single row insert.
+	
+	-> Generate Seeder on table name and use factory for multiple row insert
+	-> Generate factory on table name and define every column on this table
+	-> Generate Model on table name and make some modification (1. mention table, 2. change column name for update and create)
+	
+Then run command to insert data	php artisan db:seed --class=UsersSeeder
+
+*) For insert data in table via model need few steps to follow, especially using the method "create" or "update" or "fill".
+	-> Either make $fillable array variable with values of columns name need to insert or else make you need to insert all columns means then you need to make the $guarded array as empty.
+	-> Always fillable is the secure option.
+	
+	-> Fillable Array -- Mention the columns need to assignable
+	-> Guarded Array -- Mention the columns need not to assignable
+	-> Either use fill or create method to insert and for update use update method
+	
+	
+Logging:
+--------
+
+Logger is not works while "APP_DEBUG" is true, so make it false for logger. Add the below code in the channels on the file config/logging.php
+
+'db' => [
+            'driver' => 'daily',
+            'channels' => ['daily'],
+            'path' => storage_path('logs/db.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'ignore_exceptions' => false
+        ],
+
+And then execute command,
+php artisan config:clear
+php artisan config:cache
+
+//For clear the cache
+	
+*) For log the query errors,
+
+	-> Make a log option on the file Illuminate\Database\QueryException.php and find variable "$this->errorInfo".
+	
+*) For hide laravel error showing page and its must for the production.
+
+	-> Make APP_DEBUG variable as false in .env file.
+	
+Exception Handling:
+-------------------
+	
+*) How to handle error exception,
+
+	-> Check the file in namespace App\Exceptions\Handler, in which two methods
+	-> "reportable" => for logging the exception error
+	-> "renderable" => for return the custom response for your requirements
+	
+	-> If you want to use different message for type of exception, then find what kind of exceptions occurs using if statement and then return reposne.
+		//If you want different message for different exception, then use it
+            /* if ($e instanceof QueryException) {
+                error_log('Query Exception');
+                return response()->json(['status' => 'error', 'message' => 'Something went wrong'], 500);
+            } */
+			
+	-> If you want to stop logging of default exception then return false on "reportable" method or else, if you want to stop for particular exception then find that exception and return false or else use $dontReport variable on it, mention the type exception is not log.
+			
+*) For logging, if you want create custom channel or you can use existing channel, already every error is logging by default.[File: Config/Logging]
+
+
+
+	-> using this code to log errors, "Log::channel('db')->error(serialize($this->errorInfo));"
+
+*) Middleware 
+	-> Three variables in file App\Http\Kernel.php
+	-> "$middleware" => For all request
+	-> "$middlewareGroups" => For both api and web routes, to group them
+	-> "$routeMiddleware" => For indivual routes
+	-> Represent the name while register and use the name on routes
+	
+	-> To generate middleware "php artisan make:middleware EnsureTokenIsValid"
+	-> use method to handle request and return response
+
+
+Validators:
+-----------
+
+*) In which regex also used, please check it and ":users" which is used to check unique email check.
+
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\Request;
+
+public function signup(Request $request) {
+	$err_message='';
+	$data = $request->all();
+	$rules = [
+		'name' => 'required|max:50|min:3|alpha_num',
+		'email' => 'required|email|unique:users',
+		'password' => 'required|min:8|regex:/[A-Z]/|regex:/[~!@#$%^&*]/|regex:/[0-9]/',
+	];
+	$messages = [
+		'name.required' => 'Name Required',
+		'name.max' => 'Name must be maximum character of 50',
+		'name.min' => 'Name must be minimum character of 3',
+		'name.alpha_num' => 'Name must be alpha numeric',
+		'email.required' => 'Email Required',
+		'email.email' => 'Invalid Email',
+		'password.required' => 'Password Required',
+		'password.min' => 'Password must be minimum character of 8',
+		'password.regex' => 'Password must contain atleast one special character, one capital letter and one number'
+	];
+	$validator = Validator::make($data, $rules, $messages);
+	if($validator->fails()) {
+		$err = $validator->errors()->all();
+		foreach($err as $key => $value) {
+			$err_message = $value;
+			break;
+		}
+		return ['status' => 'error', 'message' => $err_message];
+	} else {
+		Users::create($data);
+		return ['status' => 'success', 'message' => 'success'];
+	}
+}	
+	
+Resources:
+----------
+
+It is been used to return json response and in which each class is extend with "use Illuminate\Http\Resources\Json\JsonResource". It has default method "toArray" and it returns json response. It is mostly usefull for route resource function, which means "get", "post", "put" and "delete" all this in one route "resource". It can also done by controller, for more information check document.
+
+
+Commands:
+---------
+
+To generate extra,
+php artisan make:command SendEmails
+
+It creates command class and stored in "app/Console/Commands"
+
+There is two variable "signature" and "description" and one method "handle".
+
+	"signature"		=>	It is name of the command and any input or argument you want to pass. It is showed in artisan command list.
+	"description"	=>	It represents the description of the command.
+	"handle"		=>	Write your login in this method and which you can read input or arguments on command.
+
+Example: 
+--------
+protected $signature = 'mail:send {user}';	//It is the example of input or argument pass through commands
+mail:send {user?}	//It is optional input
+mail:send {user=foo}	//It is default input
+mail:send {user*}	//It is multiple inputs 	[php artisan mail:send foo bar  //Example how to call in cli]
+protected $signature = 'mail:send {user} {--queue}';	//In which "--" after double hyphen represents the options on the command. It is not accept the values, for that you need to add "=" on it like below
+mail:send {user} {--id=*} 	//In which multiple options	[php artisan mail:send --id=1 --id=2  //Example how to call in cli]
+protected $signature = 'mail:send
+                        {user : The ID of the user}
+                        {--queue= : Whether the job should be queued}';
+						
+public function handle()
+{
+    $userId = $this->argument('user');	//Get input value on the command
+
+    $arguments = $this->arguments();	//Get values as an array
+	
+	$queueName = $this->option('queue');	//Get option value on the command
+	
+	$options = $this->options();	//Retrieve all options as an array
+	
+	$name = $this->ask('What is your name?');	//Prompt interact: Interact with users while execute command.
+	
+	$password = $this->secret('What is the password?');		//It is same as "ask". But in which user input is not visiable to users.
+	
+	if ($this->confirm('Do you wish to continue?')) {		//It is confirmation
+	
+	}
+	
+	$this->info('The command was successful!');		//It is used to show output to the user with different color, for example "info" shows the green color and "error" shows the rred color
+	
+	$users = $this->withProgressBar(User::all(), function ($user) {		//It shows the progress bar while task is too long
+		$this->performTask($user);
+	});
+	
+	$users = App\Models\User::all();
+
+	$bar = $this->output->createProgressBar(count($users));
+
+	$bar->start();
+
+	foreach ($users as $user) {
+		$this->performTask($user);
+
+		$bar->advance();
+	}
+
+	$bar->finish();
+	
+	
+	// To execute any other command within handle method
+	
+	$this->call('mail:send', [
+        'user' => 1, '--queue' => 'default'
+    ]);
+	
+	
+}
+
+
+
+// Execute command on the code without cli
+
+use Illuminate\Support\Facades\Artisan;
+
+Route::post('/mail', function () {
+    $exitCode = Artisan::call('mail:send', [
+        '--id' => [5, 13]
+    ]);
+});
+
+
+$exitCode = Artisan::call('migrate:refresh', [
+    '--force' => true,
+]);
+
+For creating custom class file using cli artisan command:
+---------------------------------------------------------
+
+Reference Link:
+---------------
+https://stackoverflow.com/questions/65221073/creating-my-custom-classes-with-laravel-artisan-laravel-8
+https://techsemicolon.github.io/blog/2019/01/11/laravel-make-custom-class-using-console-command/
+
+	-> First create command class file using command "php artisan make:command ExtraClass"
+	-> Use "use Illuminate\Console\GeneratorCommand;" instead of "use Illuminate\Console\Command;" and extend "ExtraClass" with "GeneratorCommand" and make code for it like below.
+
+	use Illuminate\Console\Command;
+	use Illuminate\Console\GeneratorCommand;
+	class AddClass extends GeneratorCommand
+	{
+		protected $name = 'make:class';
+		protected $type = 'class';
+		protected $description = 'Create custom class';
+		protected function getStub()
+		{
+			return app_path('Console/Stubs/ClassStub.php');
+		}
+		protected function getDefaultNamespace($rootNamespace)
+		{
+			return $rootNamespace.'\Extra';
+		}
+	}
+
+	-> Then create the mentioned file on above "return app_path('Console/Stubs/ClassStub.php');"
+	
+	namespace App\Extra;
+	class DummyClass {}
+	
+	-> Now execute the command to create file "php artisan make:class TestClass"
+	
+	
+	$path = resource_path('images/app.scss');
+	
+	
+File Downloads:
+---------------
+	
+*) For Download options
+
+	Mostly don't use the laravel download.
+	https://stackoverflow.com/questions/12596024/show-save-as-dialog-box-while-downloading-file-from-an-iframe-through-php
+	
+	-> One thing you need worry about is header for file type extension and most important thing is header, we can use laravel code to download along with headers which is mentioned below.
+	
+	$file = 'one.jpg';
+    $filename = 'one';
+    $pathToFile = public_path('images/one.jpg');
+
+    header("Cache-Control: ");// leave blank to avoid IE errors
+    header("Pragma: ");// leave blank to avoid IE errors
+    header("Content-Disposition: attachment; filename=\"".$file."\"");
+    header("Content-length:".(string)(filesize($pathToFile)));
+    header("Content-Type: application/force-download");
+    header("Content-Type: application/download");
+    header('Content-Type: application/octet-stream');
+    header('Content-Type: image/jpg');
+    header("Content-Transfer-Encoding: binary ");
+    echo $pathToFile;
+    exit;
+	
+	$file = 'one.jpg';
+    $filename = 'one';
+    $pathToFile = public_path('images/one.jpg');
+	$headers = [
+        'Cache-Control: ',
+        'Pragma: ',
+    "Content-Disposition: attachment; filename=\"".$file."\"",
+    "Content-length:".(string)(filesize($pathToFile)),
+    "Content-Type: application/force-download",
+    "Content-Type: application/download",
+    'Content-Type: application/octet-stream',
+    'Content-Type: image/jpg',
+    'Content-Transfer-Encoding: binary'
+    ];
+    //$headers = ['Content-Type: image/jpeg'];
+    return response()->download($pathToFile, $filename, $headers);
+	
+
+
+Queue:
+------
+
+	It is been used to long process like bulk email send and some other process, because it takes long time to complete so user need to wait for process complete, for that reason queue is needed.
+	
+	-> In which several types of connection, among which database and redis is the most commonly used connection, by default syn is the connection.
+	
+	For database connection:
+	
+		-> Make change "QUEUE_CONNECTION" to "database" in .env file.
+		-> Create table on mysql for queue
+			php artisan queue:table
+			php artisan migrate
+			php artisan queue:failed-table
+			php artisan migrate
+			
+		-> install redis for redis connection
+			
+	php artisan make:job ProcessPodcast		// It is used to create job and file location in app/job
+	
+	ProcessPodcast::dispatch('values')->delay(now()->addMinutes(10));	// For delay job execution for 10 minutes
+	
+	ProcessPodcast::dispatch()->onQueue('emails');	// It is used to execute the job
+	
+	Job file:
+		
+	class ProcessPodcast implements ShouldQueue
+{
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    protected $podcast;
+    public function __construct(Podcast $podcast)
+    {
+        $this->podcast = $podcast;
+    }
+    public function handle()
+    {
+        // Process uploaded podcast...
+		Mail::to('taylor@example.com')->send(new WelcomeMessage);
+    }
+}
+
+
+Get values through constructor and use it in handle method.
+
+Don't forgot to restart after making every changes on job files.
+php artisan queue:restart
+		or
+php artisan queue:work
+
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+php artisan queue:work	// It is must to run jobs, so you should run 24 hours this commands.
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+Send Mail:
+----------
+
+Use mailtrap for testing purpose.
+
+Before goes into mail, first setup SMTP configuration on .env file for email.
+
+Reference Link for mail:
+------------------------
+https://laravel.com/docs/8.x/mail#queueing-mail
+
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=465
+MAIL_USERNAME=surendar21094@gmail.com
+MAIL_PASSWORD=puducherry
+MAIL_ENCRYPTION=ssl
+MAIL_FROM_ADDRESS=surendar21094@gmail.com
+MAIL_FROM_NAME="${APP_NAME}"
+
+
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.mailtrap.io
+MAIL_PORT=2525
+MAIL_USERNAME=e459b000a8619c
+MAIL_PASSWORD=460527d601277e
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS=surendar21094@gmail.com
+MAIL_FROM_NAME="${APP_NAME}"
+
+
+Generate mail file using this command,
+php artisan make:mail ReminderMail	// It creates file on namespace App/Mail/ReminderMail
+
+php artisan make:mail ReminderMail -m emails.reminder	// In which -m value represents the view file name.
+
+It creates file and make customs.
+
+class ReminderMail extends Mailable
+{
+    use Queueable, SerializesModels;
+    public $users;
+    public function __construct($usr)
+    {
+        Log::channel('db')->error('Test log');
+        $this->users = $usr;
+    }
+    public function build()
+    {
+        return $this->from('surendar02101994@gmail.com')->view('emails.reminder')->subject('Custom Subject');
+    }
+}
+
+
+***************************************************************************************************************************************************************************************
+It represent the connection and queue
+
+$user = User::findOrFail($id);
+
+$message = (new ReminderMail($users))
+                ->onConnection('sqs')
+                ->onQueue('emails');
+
+Mail::to($request->user())
+    ->cc($moreUsers)
+    ->bcc($evenMoreUsers)
+    ->queue($message);
+
+
+Don't use above code	
+	
+Mail::to($request->user())
+    ->cc($moreUsers)
+    ->bcc($evenMoreUsers)
+    ->send(new OrderShipped($order));
+
+
+***************************************************************************************************************************************************************************************
+
+In controller:
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+It doesn't works well, so take it as reference and do not use it.
+
+	use Mail;
+    $user = User::findOrFail($id);
+
+	/* Mail::send('emails.reminder', ['user' => $user], function ($m) use ($user) {
+		$m->from('hello@app.com', 'Your Application');
+
+		$m->to($user->email, $user->name)->subject('Your Reminder!');
+	}); */
+	
+	Mail::to($to)->send(new ReminderMail($this->users));
+		
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+It is Job file.
+
+class SendMailJob implements ShouldQueue
+{
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    public $users;
+    public function __construct($usr)
+    {
+        $this->users = $usr;
+    }
+    public function handle()
+    {
+        $to = "surendar021094@gmail.com";
+        $cc = "surendar21094@zoho.com";
+        $bcc = "surendar21094@outlook.com";
+       Log::channel('db')->error('Job Queue execute');
+        /* $message = (new ReminderMail($this->users))
+        ->onQueue('emails');
+        Mail::to($to)->queue($message); */
+        Mail::to($to)->send(new ReminderMail($this->users));
+    }
+}
+	
+	Don't use the emails queue, because i don't know how it works.
+	
+	Below code is view file code for your mail.
+	
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Laravel Mail</title>
+</head>
+<body>
+    <h1>Demo Test Mail 5</h1>
+    <div>This is my demo test mail {{ $users['name'] }}</div>
+</body>
+</html>
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Single Page Application:
+------------------------
+	
+	* Instead of load html header and footer for all pages, load only content in all page is called single page application.
+	* In laravel view file name should be always include "blade".
+	* In laravel, inside of "views" folder create "layouts" folder and inside that folder create "app.blade.php" file(the file name could be your choice.[you can create like before login and create another file named as after login]).
+	* @yield is used to display contents. [Example: @yield('title')]
+	* @section('navbar') is used to display sections of HTML contents.
+	* @yield('content') it loads all child template in parent on this tag.
+	* @extends('layouts.app') it denotes the child of parent, in which "layouts" refers folder and "app" refers file name.
+	* Contrary to the below example, this sidebar section ends with @endsection instead of @show. The @endsection directive will only define a section while @show will define and immediately yield the section.
+	* Don't use semicolon(;) on this tags.
+	* @parent - In which below example, content from parent is loaded on child using @parent, below example loads sidebar on from parent.
+	* @section('content') - It is one connect with parent @yield('content').
+	* For install bootstrap follow the instruction in this link "https://laravel.com/docs/7.x/frontend".
+	
+	Example:
+	Parent:
+	-------
+	<!-- resources/views/layouts/app.blade.php -->
+	<html>
+		<head>
+			<title>App Name - @yield('title')</title>
+		</head>
+		<body>
+			@section('sidebar')
+				This is the master sidebar.
+			@show
+
+			<div class="container">
+				@yield('content')
+			</div>
+		</body>
+	</html>
+	
+	<!-- resources/views/child.blade.php -->
+	Child:
+	------
+	@extends('layouts.app')
+
+	@section('title', 'Page Title')
+
+	@section('sidebar')
+		@parent
+
+		<p>This is appended to the master sidebar.</p>
+	@endsection
+
+	@section('content')
+		<p>This is my body content.</p>
+	@endsection

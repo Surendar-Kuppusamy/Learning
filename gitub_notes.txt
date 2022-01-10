@@ -1,3 +1,8 @@
+My Github Account Details:
+--------------------------
+Email: surendar021094@gmail.com
+Password: Kuppusamy@2
+
 $$$$$$$$$$$$		Important		$$$$$$$$$$$$$$$$$
 
 Always use SSH key instead of https url.
@@ -6,10 +11,15 @@ Should not use below example:
 
 Example: git remote add origin https://github.com/Surendar-Kuppusamy/Nodejs.git
 
+git remote add origin https://github.com/Surendar-Kuppusamy/HouseBroker.git
+
 
 Should be use below example:
 
 Example: git remote add origin git@github.com:Surendar-Kuppusamy/Nodejs.git
+
+git branch -m master (OR) main
+git checkout -b main
 
 $$$$$$$$$$$$		Important		$$$$$$$$$$$$$$$$$
 
@@ -67,9 +77,27 @@ git commit -m "commit operation"
 *) Fill in your GitHub username and password.
 *) View your files in your repository hosted on GitHub.
 
+
+
+
+
 Steps:
 *) git add .
 *) git status
 *) git commit -m 'your message'
-*) git remote add origin 'https://github.com/Surendar-Kuppusamy/PondyTolet.git'	//https://github.com/Surendar-Kuppusamy/Learning.git
+*) git remote add origin 'https://github.com/Surendar-Kuppusamy/PondyTolet.git'
+//https://github.com/Surendar-Kuppusamy/Learning.git
 *) git push -u origin master
+
+git pull 'https://github.com/Surendar-Kuppusamy/HouseBroker.git'
+git fetch 'https://github.com/Surendar-Kuppusamy/Learning.git'
+
+Steps:
+*) git add .
+*) git status
+*) git commit -m 'your message'
+*) git remote add origin 'https://github.com/Surendar-Kuppusamy/HouseBroker.git'
+*) git push -u origin main (or) git push --force origin main
+
+
+

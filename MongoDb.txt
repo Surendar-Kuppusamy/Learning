@@ -26,6 +26,34 @@ Advantages of MongoDB over RDBMS:
 #) Uses internal memory for storing the (windowed) working set, enabling faster access of data.
 
 
+Text Index:
+------------
+*) It is used to create text index in any one of the field in collection. Once created, then we can search text without mention the fields, like below.
+
+Create schema like this,
+
+city_name: {
+	type: String,
+	text: true	//Its important for it
+}
+
+and below
+CitySchema.index({ city_name: 1 }); // schema level
+
+In command prompt,
+db.cities.getIndexes()
+db.cities.dropIndex(name)
+
+aggrecate:
+----------
+{
+	$match: {
+		$text: {
+			$search: keyword
+		}
+	}
+},
+
 Installation Process:
 ---------------------
 
@@ -1848,3 +1876,1182 @@ Let's take a look at some common pipeline operators in MongoDB:
     $limit − This limits the amount of documents to look at, by the given number starting from the current positions.
 
     $unwind − This is used to unwind document that are using arrays. When using an array, the data is kind of pre-joined and this operation will be undone with this to have individual documents again. Thus with this stage we will increase the amount of documents for the next stage.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+$sort (aggregation):
+--------------------
+*) Sorts all input documents and returns them to the pipeline in sorted order.
+
+Syntax:
+-------
+{ $sort: { <field1>: <sort order>, <field2>: <sort order> ... } }
+
+*) $sort takes a document that specifies the field(s) to sort by and the respective sort order. <sort order> can have one of the following values:
+
+Value	Description
+1		Sort ascending.
+-1		Sort descending.
+
+*) If sorting on multiple fields, sort order is evaluated from left to right. For example, in the form above, documents are first sorted by <field1>. Then documents with the same <field1> values are further sorted by <field2>.
+
+Sort Consistency:
+-----------------
+*) MongoDB does not store documents in a collection in a particular order. When sorting on a field which contains duplicate values, documents containing those values may be returned in any order.
+*) If consistent sort order is desired, include at least one field in your sort that contains unique values. The easiest way to guarantee this is to include the _id field in your sort query.
+
+
+Consider the following restaurant collection:
+---------------------------------------------
+
+db.restaurants.insertMany( [
+   { "_id" : 1, "name" : "Central Park Cafe", "borough" : "Manhattan"},
+   { "_id" : 2, "name" : "Rock A Feller Bar and Grill", "borough" : "Queens"},
+   { "_id" : 3, "name" : "Empire State Pub", "borough" : "Brooklyn"},
+   { "_id" : 4, "name" : "Stan's Pizzaria", "borough" : "Manhattan"},
+   { "_id" : 5, "name" : "Jane's Deli", "borough" : "Brooklyn"},
+] );
+
+The following command uses the $sort stage to sort on the borough field:
+
+Example:
+--------
+db.restaurants.aggregate(
+   [
+     { $sort : { borough : 1 } }
+   ]
+)
+
+*) In this example, sort order may be inconsistent, since the borough field contains duplicate values for both Manhattan and Brooklyn. Documents are returned in alphabetical order by borough, but the order of those documents with duplicate values for borough might not the be the same across multiple executions of the same sort. For example, here are the results from two different executions of the above command:
+
+Output:
+-------
+{ "_id" : 3, "name" : "Empire State Pub", "borough" : "Brooklyn" }
+{ "_id" : 5, "name" : "Jane's Deli", "borough" : "Brooklyn" }
+{ "_id" : 1, "name" : "Central Park Cafe", "borough" : "Manhattan" }
+{ "_id" : 4, "name" : "Stan's Pizzaria", "borough" : "Manhattan" }
+{ "_id" : 2, "name" : "Rock A Feller Bar and Grill", "borough" : "Queens" }
+{ "_id" : 5, "name" : "Jane's Deli", "borough" : "Brooklyn" }
+{ "_id" : 3, "name" : "Empire State Pub", "borough" : "Brooklyn" }
+{ "_id" : 4, "name" : "Stan's Pizzaria", "borough" : "Manhattan" }
+{ "_id" : 1, "name" : "Central Park Cafe", "borough" : "Manhattan" }
+{ "_id" : 2, "name" : "Rock A Feller Bar and Grill", "borough" : "Queens" }
+
+*) While the values for borough are still sorted in alphabetical order, the order of the documents containing duplicate values for borough (i.e. Manhattan and Brooklyn) is not the same.
+
+*) To achieve a consistent sort, add a field which contains exclusively unique values to the sort. The following command uses the $sort stage to sort on both the borough field and the _id field:
+
+Example:
+--------
+db.restaurants.aggregate(
+   [
+     { $sort : { borough : 1, _id: 1 } }
+   ]
+)
+
+*) Since the _id field is always guaranteed to contain exclusively unique values, the returned sort order will always be the same across multiple executions of the same sort.
+
+Ascending/Descending Sort:
+--------------------------
+For the field or fields to sort by, set the sort order to 1 or -1 to specify an ascending or descending sort respectively, as in the following example:
+
+Example:
+--------
+db.users.aggregate(
+   [
+     { $sort : { age : -1, posts: 1 } }
+   ]
+)
+
+*) This operation sorts the documents in the users collection, in descending order according by the age field and then in ascending order according to the value in the posts field.
+
+Text Score Metadata Sort:
+-------------------------
+*) For a pipeline that includes a $text search, you can sort by descending relevance score using the { $meta: "textScore" } expression. In the { <sort-key> } document, set the { $meta: "textScore" } expression to an arbitrary field name. The field name is ignored by the query system. For example:
+
+Example:
+--------
+db.users.aggregate(
+   [
+     { $match: { $text: { $search: "operating" } } },
+     { $sort: { score: { $meta: "textScore" }, posts: -1 } }
+   ]
+)
+
+*) This operation uses the $text operator to match the documents, and then sorts first by the "textScore" metadata in descending order, and then by the posts field in descending order. The score field name in the sort document is ignored by the query system. In this pipeline, the "textScore" metadata is not included in the projection and is not returned as part of the matching documents. See $meta for more information.
+
+
+$limit:
+-------
+*) Limits the number of documents passed to the next stage in the pipeline.
+*) $limit takes a positive integer that specifies the maximum number of documents to pass along.
+*) If using the $limit stage with any of: "$sort", sort(), findAndModify(), be sure to include at least one field in your sort that contains unique values, before passing results to the $limit stage.
+*) Sorting on fields that contain duplicate values may return an inconsistent sort order for those duplicate fields over multiple executions, especially when the collection is actively receiving writes.
+*) The easiest way to guarantee sort consistency is to include the _id field in your sort query.
+
+Example:
+--------
+db.article.aggregate([
+   { $limit : 5 }
+]);
+
+*) This operation returns only the first 5 documents passed to it by the pipeline. $limit has no effect on the content of the documents it passes.
+
+
+$match (aggregation):
+---------------------
+Filters the documents to pass only the documents that match the specified condition(s) to the next pipeline stage.
+
+Syntax:
+-------
+{ $match: { <query> } }
+
+*) $match takes a document that specifies the query conditions. The query syntax is identical to the read operation query syntax; i.e. $match does not accept raw aggregation expressions. Instead, use a $expr query expression to include aggregation expression in $match.
+
+Restrictions:
+-------------
+*) The $match query syntax is identical to the read operation query syntax; i.e. $match does not accept raw aggregation expressions. To include aggregation expression in $match, use a $expr query expression:
+
+Syntax:
+-------
+{ $match: { $expr: { <aggregation expression> } } }
+
+*) You cannot use $where in $match queries as part of the aggregation pipeline.
+*) You cannot use $near or $nearSphere in $match queries as part of the aggregation pipeline. As an alternative, you can either:
+*) To use $text in the $match stage, the $match stage has to be the first stage of the pipeline.
+
+Examples:
+---------
+The examples use a collection named articles with the following documents:
+
+{ "_id" : ObjectId("512bc95fe835e68f199c8686"), "author" : "dave", "score" : 80, "views" : 100 }
+{ "_id" : ObjectId("512bc962e835e68f199c8687"), "author" : "dave", "score" : 85, "views" : 521 }
+{ "_id" : ObjectId("55f5a192d4bede9ac365b257"), "author" : "ahn", "score" : 60, "views" : 1000 }
+{ "_id" : ObjectId("55f5a192d4bede9ac365b258"), "author" : "li", "score" : 55, "views" : 5000 }
+{ "_id" : ObjectId("55f5a1d3d4bede9ac365b259"), "author" : "annT", "score" : 60, "views" : 50 }
+{ "_id" : ObjectId("55f5a1d3d4bede9ac365b25a"), "author" : "li", "score" : 94, "views" : 999 }
+{ "_id" : ObjectId("55f5a1d3d4bede9ac365b25b"), "author" : "ty", "score" : 95, "views" : 1000 }
+
+Equality Match:
+---------------
+The following operation uses $match to perform a simple equality match:
+
+db.articles.aggregate(
+    [ { $match : { author : "dave" } } ]
+);
+
+The $match selects the documents where the author field equals dave, and the aggregation returns the following:
+
+{ "_id" : ObjectId("512bc95fe835e68f199c8686"), "author" : "dave", "score" : 80, "views" : 100 }
+{ "_id" : ObjectId("512bc962e835e68f199c8687"), "author" : "dave", "score" : 85, "views" : 521 }
+
+Perform a Count:
+----------------
+The following example selects documents to process using the $match pipeline operator and then pipes the results to the $group pipeline operator to compute a count of the documents:
+
+Example:
+--------
+
+db.articles.aggregate( [
+  { $match: { $or: [ { score: { $gt: 70, $lt: 90 } }, { views: { $gte: 1000 } } ] } },
+  { $group: { _id: null, count: { $sum: 1 } } }
+] );
+
+In the aggregation pipeline, $match selects the documents where either the score is greater than 70 and less than 90 or the views is greater than or equal to 1000. These documents are then piped to the $group to perform a count. The aggregation returns the following:
+
+Output:
+-------
+{ "_id" : null, "count" : 5 }
+
+
+
+$merge (aggregation):
+---------------------
+Writes the results of the aggregation pipeline to a specified collection. The $merge operator must be the last stage in the pipeline.
+
+	- Can output to a collection in the same or different database.
+	- Creates a new collection if the output collection does not already exist.
+	- Can incorporate results (insert new documents, merge documents, replace documents, keep existing documents, fail the operation, process documents with a custom update pipeline) into an existing collection.
+	- Can output to a sharded collection. Input collection can also be sharded.
+	
+For a comparison with the $out stage which also outputs the aggregation results to a collection, see $merge and $out Comparison.
+
+Syntax:
+-------
+$merge has the following syntax:
+
+Syntax:
+-------
+{ $merge: {
+     into: <collection> -or- { db: <db>, coll: <collection> },
+     on: <identifier field> -or- [ <identifier field1>, ...],  // Optional
+     let: <variables>,                                         // Optional
+     whenMatched: <replace|keepExisting|merge|fail|pipeline>,  // Optional
+     whenNotMatched: <insert|discard|fail>                     // Optional
+} }
+
+For example:
+------------
+{ $merge: { into: "myOutput", on: "_id", whenMatched: "replace", whenNotMatched: "insert" } }
+
+If using all default options for $merge, including writing to a collection in the same database, you can use the simplified form:
+
+Syntax:
+-------
+{ $merge: <collection> } // Output collection is in the same database
+
+The $merge takes a document with the following fields:
+
+Field			Description
+
+into			The collection name as a string to output to a collection in the same database where the aggregation is run. For example:
+				into: "myOutput"
+				
+				The database and collection name in a document to output to a collection in the specified database. For example:
+				into: { db:"myDB", coll:"myOutput" }
+	
+
+
+
+
+
+$lookup (aggregation):
+----------------------
+*) Performs a left outer join to an unsharded collection in the same database to filter in documents from the "joined" collection for processing. To each input document, the $lookup stage adds a new array field whose elements are the matching documents from the "joined" collection. The $lookup stage passes these reshaped documents to the next stage.
+
+Syntax:
+-------
+{
+   $lookup:
+     {
+       from: <collection to join>,
+       localField: <field from the input documents>,
+       foreignField: <field from the documents of the "from" collection>,
+       as: <output array field>
+     }
+}
+
+Field			Description
+
+from			Specifies the collection in the same database to perform the join with. The from collection cannot be sharded. For details, see Sharded Collection Restrictions.
+
+localField		Specifies the field from the documents input to the $lookup stage. $lookup performs an equality match on the localField to the foreignField from the documents of 
+				the from collection. If an input document does not contain the localField, the $lookup treats the field as having a value of null for matching purposes.
+
+foreignField	Specifies the field from the documents in the from collection. $lookup performs an equality match on the foreignField to the localField from the input documents. If 
+				a document in the from collection does not contain the foreignField, the $lookup treats the value as null for matching purposes.
+
+as				Specifies the name of the new array field to add to the input documents. The new array field contains the matching documents from the from collection. If the 
+				specified name already exists in the input document, the existing field is overwritten.
+				
+				
+The operation would correspond to the following pseudo-SQL statement:
+
+SELECT *, <output array field>
+FROM collection
+WHERE <output array field> IN (
+   SELECT *
+   FROM <collection to join>
+   WHERE <foreignField> = <collection.localField>
+);
+
+
+Join Conditions and Subqueries on a Joined Collection:
+------------------------------------------------------
+MongoDB 3.6 adds support for:
+
+    - Executing a pipeline on a joined collection.
+    - Multiple join conditions.
+    - Correlated and uncorrelated subqueries.
+	
+In MongoDB, a correlated subquery is a pipeline in a $lookup stage that references document fields from a joined collection. An uncorrelated subquery does not reference joined fields.
+
+*) To perform correlated and uncorrelated subqueries with two collections, and perform other join conditions besides a single equality match, use this $lookup syntax:
+
+Syntax:
+-------
+{
+   $lookup:
+      {
+         from: <joined collection>,
+         let: { <var_1>: <expression>, …, <var_n>: <expression> },
+         pipeline: [ <pipeline to run on joined collection> ],
+         as: <output array field>
+      }
+}
+
+The operation corresponds to this pseudo-SQL statement:
+
+SELECT *, <output array field>
+FROM collection
+WHERE <output array field> IN (
+   SELECT <documents as determined from the pipeline>
+   FROM <collection to join>
+   WHERE <pipeline>
+);
+
+Field			Description
+
+from			Specifies the collection in the same database to perform the join operation. The joined collection cannot be sharded (see Sharded Collection Restrictions).
+
+let				Optional. Specifies variables to use in the pipeline stages. Use the variable expressions to access the fields from the joined collection's documents that are input 
+				to the pipeline.
+				Notes:
+				------
+				*) To reference variables in pipeline stages, use the "$$<variable>" syntax.
+				*) The let variables can be accessed by the stages in the pipeline, including additional $lookup stages nested in the pipeline.
+				*) A $match stage requires the use of an $expr operator to access the variables. The $expr operator allows the use of aggregation expressions inside of the $match syntax.
+				*) Starting in MongoDB 5.0, the $eq, $lt, $lte, $gt, and $gte comparison operators placed in an $expr operator can use an index on the from collection referenced in a $lookup stage. Limitations:
+				*) Other (non-$match) stages in the pipeline do not require an $expr operator to access the variables.
+				*) Multikey indexes are not used.
+				*) Indexes are not used for comparisons where the operand is an array or the operand type is undefined.
+				*) Indexes are not used for comparisons with more than one field path operand.
+
+pipeline		Specifies the pipeline to run on the joined collection. The pipeline determines the resulting documents from the joined collection. To return all documents, specify 
+				an empty pipeline [].
+				The pipeline cannot include the $out stage or the $merge stage.
+				The pipeline cannot directly access the joined document fields. Instead, define variables for the joined document fields using the let option and then reference the variables in the pipeline stages.
+				Notes:
+				------
+				*) To reference variables in pipeline stages, use the "$$<variable>" syntax.
+				*) The let variables can be accessed by the stages in the pipeline, including additional $lookup stages nested in the pipeline.
+				*) A $match stage requires the use of an $expr operator to access the variables. The $expr operator allows the use of aggregation expressions inside of the $match syntax.
+				*) Starting in MongoDB 5.0, the $eq, $lt, $lte, $gt, and $gte comparison operators placed in an $expr operator can use an index on the from collection referenced in a $lookup stage. Limitations:
+				*) Multikey indexes are not used.
+				*) Indexes are not used for comparisons where the operand is an array or the operand type is undefined.
+				*) Indexes are not used for comparisons with more than one field path operand.
+				*) Other (non-$match) stages in the pipeline do not require an $expr operator to access the variables.
+				
+as				Specifies the name of the new array field to add to the joined documents. The new array field contains the matching documents from the joined collection. If the 
+				specified name already exists in the joined document, the existing field is overwritten.
+				
+*) Starting in MongoDB 5.0, you can use a concise syntax for a correlated subquery. Correlated subqueries reference document fields from a joined "foreign" collection and the "local" collection on which the aggregate() method was run.
+
+*) The following new concise syntax removes the requirement for an equality match on the foreign and local fields inside of an $expr operator:
+
+Syntax:
+-------
+{
+   $lookup:
+      {
+         from: <foreign collection>,
+         localField: <field from local collection's documents>,
+         foreignField: <field from foreign collection's documents>,
+         let: { <var_1>: <expression>, …, <var_n>: <expression> },
+         pipeline: [ <pipeline to run> ],
+         as: <output array field>
+      }
+}
+
+Example:
+--------
+db.orders.aggregate([
+   {
+     $lookup:
+       {
+         from: "inventory",
+         localField: "item",
+         foreignField: "sku",
+         as: "inventory_docs"
+       }
+  }
+])
+
+
+
+Field			Description
+
+from			Specifies the foreign collection in the same database to join to the local collection. The foreign collection cannot be sharded (see Sharded Collection Restrictions).
+
+localField		*) Specifies the local documents' localField to perform an equality match with the foreign documents' foreignField.
+				*) If a local document does not contain a localField value, the $lookup uses a null value for the match.
+
+foreignField	*) Specifies the foreign documents' foreignField to perform an equality match with the local documents' localField.
+				*) If a foreign document does not contain a foreignField value, the $lookup uses a null value for the match.
+
+let				Optional. Specifies the variables to use in the pipeline stages. Use the variable expressions to access the document fields that are input to the pipeline.
+				Notes:
+				------
+				*) To reference variables in pipeline stages, use the "$$<variable>" syntax.
+				*) The let variables can be accessed by the stages in the pipeline, including additional $lookup stages nested in the pipeline.
+				*) A $match stage requires the use of an $expr operator to access the variables. The $expr operator allows the use of aggregation expressions inside of the $match syntax.
+				*) Starting in MongoDB 5.0, the $eq, $lt, $lte, $gt, and $gte comparison operators placed in an $expr operator can use an index on the from collection referenced in a $lookup stage. Limitations:
+				*) Multikey indexes are not used.
+				*) Indexes are not used for comparisons where the operand is an array or the operand type is undefined.
+				*) Indexes are not used for comparisons with more than one field path operand.
+				*) Other (non-$match) stages in the pipeline do not require an $expr operator to access the variables.
+
+pipeline		Specifies the pipeline to run on the foreign collection. The pipeline returns documents from the foreign collection. To return all documents, specify an empty 
+				pipeline [].
+				*) The pipeline cannot include the $out or $merge stages.
+				*) The pipeline cannot directly access the document fields. Instead, define variables for the document fields using the "let" option and then reference the variables in the pipeline stages.
+				Notes:
+				------
+				*) To reference variables in pipeline stages, use the "$$<variable>" syntax.
+				*) The let variables can be accessed by the stages in the pipeline, including additional $lookup stages nested in the pipeline.
+				*) A $match stage requires the use of an $expr operator to access the variables. The $expr operator allows the use of aggregation expressions inside of the $match syntax.
+				*) Starting in MongoDB 5.0, the $eq, $lt, $lte, $gt, and $gte comparison operators placed in an $expr operator can use an index on the from collection referenced in a $lookup stage. Limitations:
+				*) Multikey indexes are not used.
+				*) Indexes are not used for comparisons where the operand is an array or the operand type is undefined.
+				*) Indexes are not used for comparisons with more than one field path operand.
+				*) Other (non-$match) stages in the pipeline do not require an $expr operator to access the variables.
+				
+as				Specifies the name of the new array field to add to the foreign documents. The new array field contains the matching documents from the foreign collection. If the 
+				specified name already exists in the foreign document, the existing field is overwritten.
+
+The operation corresponds to this pseudo-SQL statement:
+
+SELECT *, <output array field>
+FROM localCollection
+WHERE <output array field> IN (
+   SELECT <documents as determined from the pipeline>
+   FROM <foreignCollection>
+   WHERE <foreignCollection.foreignField> = <localCollection.localField>
+   AND <pipeline match condition>
+);
+
+
+*) Perform a Single Equality Join with $lookup
+-----------------------------------------------
+
+Example:
+--------
+
+Create a collection orders with these documents:
+
+db.orders.insert([
+   { "_id" : 1, "item" : "almonds", "price" : 12, "quantity" : 2 },
+   { "_id" : 2, "item" : "pecans", "price" : 20, "quantity" : 1 },
+   { "_id" : 3  }
+])
+				
+
+Create another collection inventory with these documents:
+
+db.inventory.insert([
+   { "_id" : 1, "sku" : "almonds", "description": "product 1", "instock" : 120 },
+   { "_id" : 2, "sku" : "bread", "description": "product 2", "instock" : 80 },
+   { "_id" : 3, "sku" : "cashews", "description": "product 3", "instock" : 60 },
+   { "_id" : 4, "sku" : "pecans", "description": "product 4", "instock" : 70 },
+   { "_id" : 5, "sku": null, "description": "Incomplete" },
+   { "_id" : 6 }
+])
+
+The following aggregation operation on the orders collection joins the documents from orders with the documents from the inventory collection using the fields item from the orders collection and the sku field from the inventory collection:
+
+db.orders.aggregate([
+   {
+     $lookup:
+       {
+         from: "inventory",
+         localField: "item",
+         foreignField: "sku",
+         as: "inventory_docs"
+       }
+  }
+])
+
+The operation returns these documents:
+
+{
+   "_id" : 1,
+   "item" : "almonds",
+   "price" : 12,
+   "quantity" : 2,
+   "inventory_docs" : [
+      { "_id" : 1, "sku" : "almonds", "description" : "product 1", "instock" : 120 }
+   ]
+}
+{
+   "_id" : 2,
+   "item" : "pecans",
+   "price" : 20,
+   "quantity" : 1,
+   "inventory_docs" : [
+      { "_id" : 4, "sku" : "pecans", "description" : "product 4", "instock" : 70 }
+   ]
+}
+{
+   "_id" : 3,
+   "inventory_docs" : [
+      { "_id" : 5, "sku" : null, "description" : "Incomplete" },
+      { "_id" : 6 }
+   ]
+}
+
+In above example, returns full records of "order" collections and also get matched records of "inventory" collections.
+
+The operation corresponds to this pseudo-SQL statement:
+
+SELECT *, inventory_docs
+FROM orders
+WHERE inventory_docs IN (
+   SELECT *
+   FROM inventory
+   WHERE sku = orders.item
+);
+
+
+Use $lookup with an Array:
+--------------------------
+*) Starting MongoDB 3.4, if the localField is an array, you can match the array elements against a scalar foreignField without needing an $unwind stage.
+
+For example, create an example collection classes with these documents:
+
+db.classes.insert( [
+   { _id: 1, title: "Reading is ...", enrollmentlist: [ "giraffe2", "pandabear", "artie" ], days: ["M", "W", "F"] },
+   { _id: 2, title: "But Writing ...", enrollmentlist: [ "giraffe1", "artie" ], days: ["T", "F"] }
+])
+
+Create another collection members with these documents:
+
+db.members.insert( [
+   { _id: 1, name: "artie", joined: new Date("2016-05-01"), status: "A" },
+   { _id: 2, name: "giraffe", joined: new Date("2017-05-01"), status: "D" },
+   { _id: 3, name: "giraffe1", joined: new Date("2017-10-01"), status: "A" },
+   { _id: 4, name: "panda", joined: new Date("2018-10-11"), status: "A" },
+   { _id: 5, name: "pandabear", joined: new Date("2018-12-01"), status: "A" },
+   { _id: 6, name: "giraffe2", joined: new Date("2018-12-01"), status: "D" }
+])
+
+The following aggregation operation joins documents in the classes collection with the members collection, matching on the members field to the name field:
+
+db.classes.aggregate([
+   {
+      $lookup:
+         {
+            from: "members",
+            localField: "enrollmentlist",
+            foreignField: "name",
+            as: "enrollee_info"
+        }
+   }
+])
+
+The operation returns the following:
+
+{
+   "_id" : 1,
+   "title" : "Reading is ...",
+   "enrollmentlist" : [ "giraffe2", "pandabear", "artie" ],
+   "days" : [ "M", "W", "F" ],
+   "enrollee_info" : [
+      { "_id" : 1, "name" : "artie", "joined" : ISODate("2016-05-01T00:00:00Z"), "status" : "A" },
+      { "_id" : 5, "name" : "pandabear", "joined" : ISODate("2018-12-01T00:00:00Z"), "status" : "A" },
+      { "_id" : 6, "name" : "giraffe2", "joined" : ISODate("2018-12-01T00:00:00Z"), "status" : "D" }
+   ]
+}
+{
+   "_id" : 2,
+   "title" : "But Writing ...",
+   "enrollmentlist" : [ "giraffe1", "artie" ],
+   "days" : [ "T", "F" ],
+   "enrollee_info" : [
+      { "_id" : 1, "name" : "artie", "joined" : ISODate("2016-05-01T00:00:00Z"), "status" : "A" },
+      { "_id" : 3, "name" : "giraffe1", "joined" : ISODate("2017-10-01T00:00:00Z"), "status" : "A" }
+   ]
+}
+
+
+Use $lookup with $mergeObjects:
+-------------------------------
+Changed in version 3.6: MongoDB 3.6 adds the $mergeObjects operator to combine multiple documents into a single document
+
+Create a collection orders with these documents:
+
+db.orders.insert([
+   { "_id" : 1, "item" : "almonds", "price" : 12, "quantity" : 2 },
+   { "_id" : 2, "item" : "pecans", "price" : 20, "quantity" : 1 }
+])
+
+Create another collection items with these documents:
+
+db.items.insert([
+  { "_id" : 1, "item" : "almonds", description: "almond clusters", "instock" : 120 },
+  { "_id" : 2, "item" : "bread", description: "raisin and nut bread", "instock" : 80 },
+  { "_id" : 3, "item" : "pecans", description: "candied pecans", "instock" : 60 }
+])
+
+The following operation first uses the $lookup stage to join the two collections by the item fields and then uses $mergeObjects in the $replaceRoot to merge the joined documents from items and orders:
+
+db.orders.aggregate([
+   {
+      $lookup: {
+         from: "items",
+         localField: "item",    // field in the orders collection
+         foreignField: "item",  // field in the items collection
+         as: "fromItems"
+      }
+   },
+   {
+      $replaceRoot: { newRoot: { $mergeObjects: [ { $arrayElemAt: [ "$fromItems", 0 ] }, "$$ROOT" ] } }
+   },
+   { $project: { fromItems: 0 } }
+])
+
+The operation returns these documents:
+
+{ "_id" : 1, "item" : "almonds", "description" : "almond clusters", "instock" : 120, "price" : 12, "quantity" : 2 }
+{ "_id" : 2, "item" : "pecans", "description" : "candied pecans", "instock" : 60, "price" : 20, "quantity" : 1 }
+
+
+Reference Link:
+---------------
+https://docs.mongodb.com/manual/reference/operator/aggregation-pipeline/
+
+$addFields (aggregation):
+-------------------------
+*) Adds new fields to documents. $addFields outputs documents that contain all existing fields from the input documents and newly added fields.
+*) Starting in version 4.2, MongoDB adds a new aggregation pipeline stage $set that is an alias for $addFields.
+*) Important Notes => If the name of the new field is the same as an existing field name (including _id), $addFields overwrites the existing value of that field with the value of the specified expression.
+*) $addFields appends new fields to existing documents. You can include one or more $addFields stages in an aggregation operation.
+
+Syntax:
+-------
+{ $addFields: { <newField>: <expression>, ... } }
+
+Example:
+--------
+Data Inserted:
+--------------
+{
+  _id: 1,
+  student: "Maya",
+  homework: [ 10, 5, 10 ],
+  quiz: [ 10, 8 ],
+  extraCredit: 0
+}
+{
+  _id: 2,
+  student: "Ryan",
+  homework: [ 5, 6, 5 ],
+  quiz: [ 8, 8 ],
+  extraCredit: 8
+}
+
+Query:
+------
+db.scores.aggregate( [
+   {
+     $addFields: {
+       totalHomework: { $sum: "$homework" } ,
+       totalQuiz: { $sum: "$quiz" }
+     }
+   },
+   {
+     $addFields: { totalScore:
+       { $add: [ "$totalHomework", "$totalQuiz", "$extraCredit" ] } }
+   }
+] )
+
+Output:
+-------
+{
+  "_id" : 1,
+  "student" : "Maya",
+  "homework" : [ 10, 5, 10 ],
+  "quiz" : [ 10, 8 ],
+  "extraCredit" : 0,
+  "totalHomework" : 25,
+  "totalQuiz" : 18,
+  "totalScore" : 43
+}
+{
+  "_id" : 2,
+  "student" : "Ryan",
+  "homework" : [ 5, 6, 5 ],
+  "quiz" : [ 8, 8 ],
+  "extraCredit" : 8,
+  "totalHomework" : 16,
+  "totalQuiz" : 16,
+  "totalScore" : 40
+}
+
+Example:
+--------
+Data inserted:
+---------------
+{ _id: 1, type: "car", specs: { doors: 4, wheels: 4 } }
+{ _id: 2, type: "motorcycle", specs: { doors: 0, wheels: 2 } }
+{ _id: 3, type: "jet ski" }
+
+Query:
+------
+db.vehicles.aggregate( [
+        {
+           $addFields: {
+              "specs.fuel_type": "unleaded"
+           }
+        }
+   ] )
+   
+Output:
+-------
+{ _id: 1, type: "car",
+   specs: { doors: 4, wheels: 4, fuel_type: "unleaded" } }
+{ _id: 2, type: "motorcycle",
+   specs: { doors: 0, wheels: 2, fuel_type: "unleaded" } }
+{ _id: 3, type: "jet ski",
+   specs: { fuel_type: "unleaded" } }
+   
+Overwriting an existing field:
+------------------------------
+Data Inserted:
+--------------
+{ _id: 1, dogs: 10, cats: 15 }
+
+Query:
+------
+db.animals.aggregate( [
+  {
+    $addFields: { "cats": 20 }
+  }
+] )
+
+Output:
+-------
+{ _id: 1, dogs: 10, cats: 20 }
+
+*) It is possible to replace one field with another. In the following example the item field substitutes for the _id field.
+
+Data Inserted:
+--------------
+{ "_id" : 1, "item" : "tangerine", "type" : "citrus" }
+{ "_id" : 2, "item" : "lemon", "type" : "citrus" }
+{ "_id" : 3, "item" : "grapefruit", "type" : "citrus" }
+
+Query:
+------
+db.fruit.aggregate( [
+  {
+    $addFields: {
+      _id : "$item",
+      item: "fruit"
+    }
+  }
+] )
+
+Output:
+-------
+{ "_id" : "tangerine", "item" : "fruit", "type" : "citrus" }
+{ "_id" : "lemon", "item" : "fruit", "type" : "citrus" }
+{ "_id" : "grapefruit", "item" : "fruit", "type" : "citrus" }
+
+*) In which above changed "_id" value and make "item" value as "fruit" as static.
+
+Add Element to an Array:
+------------------------
+Data inserted:
+--------------
+db.scores.insertMany([
+   { _id: 1, student: "Maya", homework: [ 10, 5, 10 ], quiz: [ 10, 8 ], extraCredit: 0 },
+   { _id: 2, student: "Ryan", homework: [ 5, 6, 5 ], quiz: [ 8, 8 ], extraCredit: 8 }
+])
+*) You can use $addFields with a $concatArrays expression to add an element to an existing array field. For example, the following operation uses $addFields to replace the homework field with a new array whose elements are the current homework array concatenated with another array containing a new score [ 7 ].
+
+Query:
+------
+db.scores.aggregate([
+   { $match: { _id: 1 } },
+   { $addFields: { homework: { $concatArrays: [ "$homework", [ 7 ] ] } } }
+])
+
+Output:
+-------
+{ "_id" : 1, "student" : "Maya", "homework" : [ 10, 5, 10, 7 ], "quiz" : [ 10, 8 ], "extraCredit" : 0 }
+ 
+ 
+ 
+$bucket (aggregation): Document it later
+----------------------
+$bucketAuto (aggregation): Document it later
+--------------------------
+$collStats (aggregation): Document it later
+-------------------------
+
+
+$count (aggregation):
+---------------------
+*) New in version 3.4.
+*) Passes a document to the next stage that contains a count of the number of documents input to the stage.
+*) The $count stage is equivalent to the following $group + $project sequence:
+
+Syntax:
+-------
+{ $count: <string> }
+
+Data Inserted:
+--------------
+{ "_id" : 1, "subject" : "History", "score" : 88 }
+{ "_id" : 2, "subject" : "History", "score" : 92 }
+{ "_id" : 3, "subject" : "History", "score" : 97 }
+{ "_id" : 4, "subject" : "History", "score" : 71 }
+{ "_id" : 5, "subject" : "History", "score" : 79 }
+{ "_id" : 6, "subject" : "History", "score" : 83 }
+
+The following aggregation operation has two stages:
+    - The $match stage excludes documents that have a score value of less than or equal to 80 to pass along the documents with score greater than 80 to the next stage.
+    - The $count stage returns a count of the remaining documents in the aggregation pipeline and assigns the value to a field called passing_scores.
+
+Query:
+------
+db.scores.aggregate(
+  [
+    {
+      $match: {
+        score: {
+          $gt: 80
+        }
+      }
+    },
+    {
+      $count: "passing_scores"
+    }
+  ]
+)
+
+Output:
+-------
+{ "passing_scores" : 4 }
+
+
+$currentOp (aggregation): Document it later
+-------------------------
+$facet (aggregation): Document it later
+---------------------
+
+$group (aggregation):
+---------------------
+Groups input documents by the specified _id expression and for each distinct grouping, outputs a document. The _id field of each output document contains the unique group by value.
+
+Syntax:
+-------
+{
+  $group:
+    {
+      _id: <expression>, // Group By Expression
+      <field1>: { <accumulator1> : <expression1> },
+      ...
+    }
+ }
+ 
+Field        Description
+-----        -----------
+_id            Required. If you specify an _id value of null, or any other constant value, the $group stage calculates accumulated values for
+            all the input documents as a whole. See example of Group by Null.
+field        Optional. Computed using the accumulator operators.
+
+Accumulator Operator:
+---------------------
+Name                    Description
+----                    ------------
+$accumulator            Returns the result of a user-defined accumulator function.
+$addToSet                Returns an array of unique expression values for each group. Order of the array elements is undefined. Changed in
+                        version 5.0: Available in $setWindowFields stage.
+$avg                    Returns an average of numerical values. Ignores non-numeric values. Changed in version 5.0: Available in
+                        $setWindowFields stage.
+$count                    Returns the number of documents in a group. Distinct from the $count pipeline stage. New in version 5.0: Available in
+                        $group and $setWindowFields stages.
+$first                    Returns a value from the first document for each group. Order is only defined if the documents are sorted. Distinct
+                        from the $first array operator. Changed in version 5.0: Available in $setWindowFields stage.
+$last                    Returns a value from the last document for each group. Order is only defined if the documents are sorted. Distinct
+                        from the $last array operator. Changed in version 5.0: Available in $setWindowFields stage.
+$max                    Returns the highest expression value for each group. Changed in version 5.0: Available in $setWindowFields stage.
+$mergeObjects            Returns a document created by combining the input documents for each group.
+$min                    Returns the lowest expression value for each group. Changed in version 5.0: Available in $setWindowFields stage.
+$push                    Returns an array of expression values for documents in each group. Changed in version 5.0: Available in
+                        $setWindowFields stage.
+$stdDevPop                Returns the population standard deviation of the input values. Changed in version 5.0: Available in $setWindowFields
+                        stage.
+$stdDevSamp                Returns the sample standard deviation of the input values. Changed in version 5.0: Available in $setWindowFields stage.
+$sum                    Returns a sum of numerical values. Ignores non-numeric values. Changed in version 5.0: Available in $setWindowFields
+                        stage.
+                        
+Data Inserted:
+--------------
+db.sales.insertMany([
+  { "_id" : 1, "item" : "abc", "price" : NumberDecimal("10"), "quantity" : NumberInt("2"), "date" : ISODate("2014-03-01T08:00:00Z") },
+  { "_id" : 2, "item" : "jkl", "price" : NumberDecimal("20"), "quantity" : NumberInt("1"), "date" : ISODate("2014-03-01T09:00:00Z") },
+  { "_id" : 3, "item" : "xyz", "price" : NumberDecimal("5"), "quantity" : NumberInt( "10"), "date" : ISODate("2014-03-15T09:00:00Z") },
+  { "_id" : 4, "item" : "xyz", "price" : NumberDecimal("5"), "quantity" :  NumberInt("20") , "date" : ISODate("2014-04-04T11:21:39.736Z") },
+  { "_id" : 5, "item" : "abc", "price" : NumberDecimal("10"), "quantity" : NumberInt("10") , "date" : ISODate("2014-04-04T21:23:13.331Z") },
+  { "_id" : 6, "item" : "def", "price" : NumberDecimal("7.5"), "quantity": NumberInt("5" ) , "date" : ISODate("2015-06-04T05:08:13Z") },
+  { "_id" : 7, "item" : "def", "price" : NumberDecimal("7.5"), "quantity": NumberInt("10") , "date" : ISODate("2015-09-10T08:43:00Z") },
+  { "_id" : 8, "item" : "abc", "price" : NumberDecimal("10"), "quantity" : NumberInt("5" ) , "date" : ISODate("2016-02-06T20:20:13Z") },
+])
+
+Query:    //It is equal to => "SELECT COUNT(*) AS count FROM sales"
+------
+db.sales.aggregate( [
+  {
+    $group: {
+       _id: null,
+       count: { $count: { } }
+    }
+  }
+] )
+
+Output:
+-------
+{ "_id" : null, "count" : 8 }
+
+Another Query:
+--------------
+db.sales.aggregate( [ { $group : { _id : "$item" } } ] )
+
+Output:
+-------
+{ "_id" : "abc" }
+{ "_id" : "jkl" }
+{ "_id" : "def" }
+{ "_id" : "xyz" }
+
+Another Query:    //It is equal to ==> "SELECT item, Sum(( price * quantity )) AS totalSaleAmount FROM sales GROUP  BY item HAVING totalSaleAmount >= 100"
+--------------
+db.sales.aggregate(
+  [
+    // First Stage
+    {
+      $group :
+        {
+          _id : "$item",
+          totalSaleAmount: { $sum: { $multiply: [ "$price", "$quantity" ] } }
+        }
+     },
+     // Second Stage
+     {
+       $match: { "totalSaleAmount": { $gte: 100 } }
+     }
+   ]
+ )
+ 
+Output:
+-------
+{ "_id" : "abc", "totalSaleAmount" : NumberDecimal("170") }
+{ "_id" : "xyz", "totalSaleAmount" : NumberDecimal("150") }
+{ "_id" : "def", "totalSaleAmount" : NumberDecimal("112.5") }
+
+
+$unionWith (aggregation):
+-------------------------
+
+Reference Link:
+---------------
+https://docs.mongodb.com/manual/reference/operator/aggregation/unionWith/
+
+Performs a union of two collections; i.e. $unionWith combines pipeline results from two collections into a single result set. The stage outputs the combined result set (including duplicates) to the next stage.
+
+Syntax:
+-------
+{ $unionWith: { coll: "<collection>", pipeline: [ <stage1>, ... ] } }
+
+*) To include all documents from the specified collection without any processing, you can use the simplified form:
+
+Syntax:
+-------
+{ $unionWith: "<collection>" }  // Include all documents from the specified collection
+
+The $unionWith stage takes a document with the following fields:
+
+Field        Description
+coll        The collection or view whose pipeline results you wish to include in the result set.
+pipeline    Optional. An aggregation pipeline to apply to the specified coll.
+            [ <stage1>, <stage2>, ...]
+            The pipeline cannot include the $out and $merge stages.
+            
+The $unionWith operation would correspond to the following SQL statement:
+
+SELECT * FROM Collection1 WHERE ... UNION ALL SELECT * FROM Collection2 WHERE ...
+
+Considerations:
+---------------
+Duplicates Results:
+-------------------
+The combined results from the previous stage and the $unionWith stage can include duplicates.
+
+For example, create a suppliers collection:
+
+Example:
+--------
+db.suppliers.insertMany([
+  { _id: 1, supplier: "Aardvark and Sons", state: "Texas" },
+  { _id: 2, supplier: "Bears Run Amok.", state: "Colorado"},
+  { _id: 3, supplier: "Squid Mark Inc. ", state: "Rhode Island" },
+])
+
+db.warehouses.insertMany([
+  { _id: 1, warehouse: "A", region: "West", state: "California" },
+  { _id: 2, warehouse: "B", region: "Central", state: "Colorado"},
+  { _id: 3, warehouse: "C", region: "East", state: "Florida" },
+])
+
+The following aggregation which combines the results from the state field projection from the suppliers collection with the results from the state field projection from the warehouse collection:
+
+db.suppliers.aggregate([
+   { $project: { state: 1, _id: 0 } },
+   { $unionWith: { coll: "warehouses", pipeline: [ { $project: { state: 1, _id: 0 } } ]} }
+])
+
+As can be seen from the returned documents, the result set contains duplicates:
+
+{ "state" : "Texas" }
+{ "state" : "Colorado" }
+{ "state" : "Rhode Island" }
+{ "state" : "California" }
+{ "state" : "Colorado" }
+{ "state" : "Florida" }
+
+To remove the duplicates, you can include a $group stage to group by the state field:
+
+db.suppliers.aggregate([
+   { $project: { state: 1, _id: 0 } },
+   { $unionWith: { coll: "warehouses", pipeline: [ { $project: { state: 1, _id: 0 } } ]} },
+   { $group: { _id: "$state" } }
+])
+
+The result set no longer contains duplicates:
+
+{ "_id" : "California" }
+{ "_id" : "Texas" }
+{ "_id" : "Florida" }
+{ "_id" : "Colorado" }
+{ "_id" : "Rhode Island" }
+
+
+
+authController.js
+-----------------
+
+import jwt from 'jsonwebtoken';
+import { getDBConnection } from '../config/db.js';
+
+export const verifyToken = async(req, res, next) => {
+    let token;
+    let err;
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+        try {
+            token = req.headers.authorization.split(' ')[1];
+            const decoded = await jwt.verify(token, process.env.JWT_SECRET);
+            const db = await getDBConnection();
+            const usersRef = await db.collection('users').doc(decoded.user_id);
+            const doc = await usersRef.get();
+            if(!doc.exists) {
+                err = new Error('Invalid token.');
+                next(err);
+            } else {
+                next();
+            }
+        } catch (error) {
+            res.status(401)
+            err = new Error(error.message);
+            next(error);
+        }
+    }
+
+    if (!token) {
+        res.status(401);
+        err = new Error('Not authorized, no token');
+        next(err);
+    }
+}
+
+export const generateToken = (user_id) => {
+    return jwt.sign({ user_id:  user_id}, process.env.JWT_SECRET, { expiresIn: '20h' }, { algorithm: 'RS256'});
+};
+
+export const getUserId = async(req) => {
+    let token;
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+        try {
+            token = req.headers.authorization.split(' ')[1];
+            const decoded = await jwt.verify(token, process.env.JWT_SECRET);
+            return decoded.user_id;
+        } catch (error) {
+            return false;
+        }
+    }
+    if (!token) {
+        return false;
+    }
+}
+
+
+-------------------------------------------------------------------------------
+
+    'rooms.*.room_name': {
+        trim: true,
+        notEmpty: {
+            errorMessage: "City name required."
+        },
+        isLength: {
+            options: {
+                min: 3,
+                max: 100
+            },
+            errorMessage: "Length must be greater or equal to 3 characters or else less or equal to 100 characters."
+        },
+        
+        custom: {
+            options: (value, { req, location, path }) => {
+                if(req.body.type_of_asset == 1 || req.body.type_of_asset == 2) {    //1 => 'House', 2 => 'Appartment'
+                    if(value == '') {
+                        return Promise.reject('Room name required.');
+                    } else {
+                        return Promise.resolve(true);
+                    }
+                }
+            }
+        }
+    }
+
+export const createCityValidationSchema = {
+    email: {
+        trim: true,
+        notEmpty: {
+            errorMessage: "Email is required."
+        },
+        isEmail: {
+            errorMessage: "Invalid email address."
+        },
+        custom: {
+            options: (value, { req, location, path }) => {
+                return Users.find({
+                    email: value,
+                    password: req.body.password
+                }).then(user => {
+                    if (user.length > 0) {
+                        return Promise.resolve(true);
+                    } else {
+                        return Promise.reject('Invalid credential.');
+                    }
+                })
+            }
+        }
+    },
+    password: {
+        trim: true,
+        notEmpty: {
+            errorMessage: "Password is required."
+        },
+        isLength: {
+            options: {
+                min: 6,
+                max: 50
+            },
+            errorMessage: "Password characters must be greater then 6 and less then 50"
+        }
+    }
+}
